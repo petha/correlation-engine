@@ -1,5 +1,7 @@
-import Model.*;
-import Extractor.VectorExtractor;
+package Correlation;
+
+import Correlation.Model.*;
+import Correlation.Extractor.VectorExtractor;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -18,12 +20,7 @@ public class Analyzer {
     @NonNull
     private String name;
 
-
-    public void addExtractor(VectorExtractor extractor) {
-        this.extractorList.add(extractor);
-    }
-
-    public IndexRecord analyze(final Document document) {
+    IndexRecord analyze(final Document document) {
         List<Integer> vector = this.extractorList.parallelStream()
                 .flatMap(extractor -> extractor.extract(document))
                 .collect(Collectors.toList());
@@ -35,7 +32,7 @@ public class Analyzer {
                 .build();
     }
 
-    public void printStatistics() {
+    void printStatistics() {
         extractorList.forEach(VectorExtractor::printStatistics);
     }
 }

@@ -1,4 +1,4 @@
-package Model;
+package Correlation.Model;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,5 +10,5 @@ import java.util.UUID;
 public class Correlation {
     private UUID sourceId;
     private UUID targetId;
-    private Double score;
+    private double score;
 }

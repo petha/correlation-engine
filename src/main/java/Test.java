@@ -1,6 +1,8 @@
-import Extractor.UniqWordsExtractor;
-import Model.Correlation;
-import Model.Document;
+import Correlation.Analyzer;
+import Correlation.CorrelationEngine;
+import Correlation.Extractor.UniqWordsExtractor;
+import Correlation.Model.Correlation;
+import Correlation.Model.Document;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 
@@ -35,13 +37,13 @@ public class Test {
                 .build()
         );
 /*      correlationEngine.addAnalyzer(
-                Analyzer.builder()
+                Correlation.Analyzer.builder()
                         .extractorList(List.of(new POSExtractor("description")))
                         .name("AuthorAnalyzer")
                         .build());
 
         correlationEngine.addAnalyzer(
-                Analyzer.builder()
+                Correlation.Analyzer.builder()
                         .extractorList(
                                 List.of(
                                         new KeywordExtractor("description", Set.of(

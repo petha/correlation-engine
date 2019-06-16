@@ -1,8 +1,9 @@
-import Extractor.VectorExtractor;
-import Model.Correlation;
-import Model.Document;
-import Model.IndexRecord;
-import Model.TermFrequency;
+package Correlation;
+
+import Correlation.Model.Correlation;
+import Correlation.Model.Document;
+import Correlation.Model.IndexRecord;
+import Correlation.Model.TermFrequency;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -56,6 +57,7 @@ public class CorrelationEngine {
     }
 
     public void addAnalyzer(Analyzer analyzer) {
+        // TODO: Verify that analyzer is not existing
         this.analyzerList.add(analyzer);
     }
 
@@ -69,7 +71,7 @@ public class CorrelationEngine {
 
     public void printStatistics() {
         this.indices.forEach((k, v) -> System.out.println(String.format("Index: \"%s\" documents: %d", k, v.size())));
-        this.termFrequencies.forEach((k,tf) -> tf.printStatistics(k));
+        this.termFrequencies.forEach((k, tf) -> tf.printStatistics(k));
         this.analyzerList.forEach(Analyzer::printStatistics);
 
     }
@@ -85,12 +87,26 @@ public class CorrelationEngine {
         this.indices.put(indexRecord.getName(), indexRecords);
     }
 
+    public Stream<Correlation> correlate(UUID sourceId, String analyzer, double cutOff) {
+        //TODO: Use hash map for finding indexes
+        return this.getIndex(analyzer)
+                .stream()
+                .filter(r -> r.getId().equals(sourceId))
+                .findFirst()
+                .map(record -> this.correlate(record, cutOff))
+                .orElseThrow(RuntimeException::new);
+    }
+
     public Stream<Correlation> correlate(IndexRecord source, double cutOff) {
         return indices.getOrDefault(source.getName(), new HashSet<>()).parallelStream()
                 .filter(indexRecord -> !indexRecord.getId().equals(source.getId()))
                 .map(target -> this.correlate(source, target))
                 .filter(correlation -> correlation.getScore() > cutOff)
                 .sorted(Comparator.comparingDouble(Correlation::getScore).reversed());
+    }
+
+    public List<Analyzer> getAnalyzers() {
+        return Collections.unmodifiableList(this.analyzerList);
     }
 
     public Correlation correlate(IndexRecord source, IndexRecord target) {

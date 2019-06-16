@@ -1,6 +1,6 @@
-package Extractor;
+package Correlation.Extractor;
 
-import Model.Document;
+import Correlation.Model.Document;
 
 import java.util.stream.Stream;
 

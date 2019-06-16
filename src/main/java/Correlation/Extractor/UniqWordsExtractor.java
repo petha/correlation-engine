@@ -1,8 +1,8 @@
-package Extractor;
+package Correlation.Extractor;
 
-import Model.Document;
-import Transformer.InputTransformer;
-import Transformer.NullTransformer;
+import Correlation.Model.Document;
+import Correlation.Transformer.InputTransformer;
+import Correlation.Transformer.NullTransformer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
@@ -34,7 +34,7 @@ public class UniqWordsExtractor extends VectorExtractor {
         TokenizerModel model = new TokenizerModel(modelStream);
         this.tokenizer = new TokenizerME(model);
         this.snowballStemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.ENGLISH);
-        this.dictionary = new LinkedHashSet<String>();
+        this.dictionary = new LinkedHashSet<>();
     }
 
     public UniqWordsExtractor(String sourceField) throws IOException {
@@ -46,7 +46,7 @@ public class UniqWordsExtractor extends VectorExtractor {
         String content = this.getContent(document);
         String[] tokens = tokenizer.tokenize(content);
 
-        Map<String, Long> amount = Arrays.stream(tokens)
+        var amount = Arrays.stream(tokens)
                 .map(String::toLowerCase)
                 .map(this.transformer::transform)
                 .map(this.snowballStemmer::stem)

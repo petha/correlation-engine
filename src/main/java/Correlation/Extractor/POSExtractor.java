@@ -1,6 +1,6 @@
-package Extractor;
+package Correlation.Extractor;
 
-import Model.Document;
+import Correlation.Model.Document;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.WhitespaceTokenizer;

@@ -1,6 +1,6 @@
-package Extractor;
+package Correlation.Extractor;
 
-import Model.Document;
+import Correlation.Model.Document;
 import lombok.NonNull;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.tokenize.TokenizerME;

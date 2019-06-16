@@ -1,4 +1,4 @@
-package Transformer;
+package Correlation.Transformer;
 
 public class NullTransformer extends InputTransformer {
     @Override
