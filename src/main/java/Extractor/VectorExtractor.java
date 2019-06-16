@@ -15,5 +15,6 @@ public abstract class VectorExtractor {
         return document.getFields().getOrDefault(this.sourceField, "");
     }
 
-    public abstract Stream<Double> extract(Document document);
+    public abstract Stream<Integer> extract(Document document);
+    public void printStatistics(){}
 }

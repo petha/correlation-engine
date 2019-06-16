@@ -36,7 +36,7 @@ public class KeywordExtractor extends VectorExtractor {
     }
 
     @Override
-    public Stream<Double> extract(Document document) {
+    public Stream<Integer> extract(Document document) {
         String content = this.getContent(document);
         String[] tokens = tokenizer.tokenize(content);
 
@@ -49,6 +49,14 @@ public class KeywordExtractor extends VectorExtractor {
 
         return keywords.parallelStream()
                 .sorted()
-                .map(keyword -> amount.getOrDefault(keyword, 0L) / (double) tokens.length);
+                .map(keyword -> amount.getOrDefault(keyword, 0L))
+                .map(Math::toIntExact);
+    }
+
+    @Override
+    public void printStatistics() {
+        System.out.println(
+                String.format(
+                        "KeywordExtractor: Dict: %s", this.keywords));
     }
 }

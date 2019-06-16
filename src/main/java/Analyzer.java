@@ -24,7 +24,7 @@ public class Analyzer {
     }
 
     public IndexRecord analyze(final Document document) {
-        List<Double> vector = this.extractorList.parallelStream()
+        List<Integer> vector = this.extractorList.parallelStream()
                 .flatMap(extractor -> extractor.extract(document))
                 .collect(Collectors.toList());
 
@@ -33,5 +33,9 @@ public class Analyzer {
                 .name(this.getName())
                 .vector(vector)
                 .build();
+    }
+
+    public void printStatistics() {
+        extractorList.forEach(VectorExtractor::printStatistics);
     }
 }

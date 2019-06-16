@@ -1,6 +1,5 @@
-import Extractor.KeywordExtractor;
-import Extractor.POSExtractor;
 import Extractor.UniqWordsExtractor;
+import Model.Correlation;
 import Model.Document;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
@@ -29,18 +28,17 @@ public class Test {
     public static void main(String[] args) throws IOException, TikaException {
         CorrelationEngine correlationEngine = new CorrelationEngine();
 
-        correlationEngine.addAnalyzer(
-                Analyzer.builder()
-                        .extractorList(List.of(new POSExtractor("description")))
-                        .name("AuthorAnalyzer")
-                        .build());
-
 
         correlationEngine.addAnalyzer(Analyzer.builder()
                 .extractorList(List.of(new UniqWordsExtractor("description")))
                 .name("UniqWords")
                 .build()
         );
+/*      correlationEngine.addAnalyzer(
+                Analyzer.builder()
+                        .extractorList(List.of(new POSExtractor("description")))
+                        .name("AuthorAnalyzer")
+                        .build());
 
         correlationEngine.addAnalyzer(
                 Analyzer.builder()
@@ -54,19 +52,24 @@ public class Test {
                                 ))
                         .name("Keywords")
                         .build());
-
+*/
         Test test = new Test();
         test.getCSV().forEach(correlationEngine::analyze);
 
-        correlationEngine.printIndicesStatistics();
-        correlationEngine.correlate(
-                correlationEngine.getIndex("UniqWords").stream().findFirst().get(), 0.3
-        ).collect(Collectors.toList())
+        correlationEngine.printStatistics();
+        correlationEngine.getIndexNames().stream()
+                .flatMap(name -> correlationEngine.getIndex(name).stream())
+                .limit(100)
+                .flatMap(record ->
+                        correlationEngine.correlate(record, 0.5)
+                ).sorted(Comparator.comparingDouble(Correlation::getScore))
+                .collect(Collectors.toList())
                 .forEach(correlation -> System.out.println(
                         String.format("Correlation: %f\n%s\n%s\n\n",
                                 correlation.getScore(),
                                 Test.data.get(correlation.getSourceId()),
                                 Test.data.get(correlation.getTargetId()))));
+
 
     }
 

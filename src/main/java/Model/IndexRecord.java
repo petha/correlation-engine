@@ -12,7 +12,7 @@ import java.util.UUID;
 public class IndexRecord {
     // TODO: Change vector into something that are aware of which extractor is creating the part
     @NonNull
-    private List<Double> vector;
+    private List<Integer> vector;
     @NonNull
     private String name;
     @NonNull

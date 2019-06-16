@@ -3,7 +3,6 @@ package Extractor;
 import Model.Document;
 import Transformer.InputTransformer;
 import Transformer.NullTransformer;
-import lombok.NonNull;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
@@ -11,9 +10,8 @@ import opennlp.tools.tokenize.TokenizerModel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -21,8 +19,7 @@ import java.util.stream.Stream;
 
 public class UniqWordsExtractor extends VectorExtractor {
 
-    @NonNull
-    private SortedSet<String> keywords;
+    private LinkedHashSet<String> dictionary;
     private TokenizerME tokenizer;
     private SnowballStemmer snowballStemmer;
     private InputTransformer transformer;
@@ -37,7 +34,7 @@ public class UniqWordsExtractor extends VectorExtractor {
         TokenizerModel model = new TokenizerModel(modelStream);
         this.tokenizer = new TokenizerME(model);
         this.snowballStemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.ENGLISH);
-        this.keywords = new TreeSet<>();
+        this.dictionary = new LinkedHashSet<String>();
     }
 
     public UniqWordsExtractor(String sourceField) throws IOException {
@@ -45,7 +42,7 @@ public class UniqWordsExtractor extends VectorExtractor {
     }
 
     @Override
-    public Stream<Double> extract(Document document) {
+    public Stream<Integer> extract(Document document) {
         String content = this.getContent(document);
         String[] tokens = tokenizer.tokenize(content);
 
@@ -55,10 +52,18 @@ public class UniqWordsExtractor extends VectorExtractor {
                 .map(this.snowballStemmer::stem)
                 .map(CharSequence::toString)
                 .filter(this.filter)
-                .peek(keyword -> this.keywords.add(keyword))
+                .peek(keyword -> this.dictionary.add(keyword))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-        return keywords.parallelStream()
-                .map(keyword -> (double) amount.getOrDefault(keyword, 0L));
+        return dictionary.parallelStream()
+                .map(keyword -> amount.getOrDefault(keyword, 0L))
+                .map(Math::toIntExact);
+    }
+
+    @Override
+    public void printStatistics() {
+        System.out.println(
+                String.format(
+                        "UniqWordsExtractor: Dict: %s", this.dictionary));
     }
 }

@@ -27,7 +27,7 @@ public class POSExtractor extends VectorExtractor {
     }
 
     @Override
-    public Stream<Double> extract(Document document) {
+    public Stream<Integer> extract(Document document) {
 
         String[] whitespaceTokenizerLine = WhitespaceTokenizer.INSTANCE
                 .tokenize(document.getFields().get(this.sourceField));
@@ -41,6 +41,6 @@ public class POSExtractor extends VectorExtractor {
 
         return Arrays.stream(this.tagger.getAllPosTags())
                 .map(tag -> tagging.getOrDefault(tag, 0L))
-                .map(val -> val / (double) whitespaceTokenizerLine.length);
+                .map(Math::toIntExact);
     }
 }
