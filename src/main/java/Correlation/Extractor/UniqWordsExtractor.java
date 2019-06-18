@@ -25,19 +25,24 @@ public class UniqWordsExtractor extends VectorExtractor {
     private InputTransformer transformer;
     private Predicate<String> filter;
 
-    public UniqWordsExtractor(String sourceField, InputTransformer transformer, Predicate<String> filter) throws IOException {
+    public UniqWordsExtractor(String sourceField, InputTransformer transformer, Predicate<String> filter) {
         super(sourceField);
 
         this.transformer = transformer;
         this.filter = filter;
         InputStream modelStream = getClass().getResourceAsStream("/en-token.bin");
-        TokenizerModel model = new TokenizerModel(modelStream);
+        TokenizerModel model = null;
+        try {
+            model = new TokenizerModel(modelStream);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot read token model");
+        }
         this.tokenizer = new TokenizerME(model);
         this.snowballStemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.ENGLISH);
         this.dictionary = new LinkedHashSet<>();
     }
 
-    public UniqWordsExtractor(String sourceField) throws IOException {
+    public UniqWordsExtractor(String sourceField) {
         this(sourceField, new NullTransformer(), (ignore) -> true);
     }
 

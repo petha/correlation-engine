@@ -1,4 +1,4 @@
-import Correlation.Analyzer;
+import Correlation.Model.Analyzer;
 import Correlation.CorrelationEngine;
 import Correlation.Extractor.UniqWordsExtractor;
 import Correlation.Model.Correlation;
@@ -36,32 +36,13 @@ public class Test {
                 .name("UniqWords")
                 .build()
         );
-/*      correlationEngine.addAnalyzer(
-                Correlation.Analyzer.builder()
-                        .extractorList(List.of(new POSExtractor("description")))
-                        .name("AuthorAnalyzer")
-                        .build());
 
-        correlationEngine.addAnalyzer(
-                Correlation.Analyzer.builder()
-                        .extractorList(
-                                List.of(
-                                        new KeywordExtractor("description", Set.of(
-                                                "worst",
-                                                "bad",
-                                                "good"
-                                        ))
-                                ))
-                        .name("Keywords")
-                        .build());
-*/
         Test test = new Test();
         test.getCSV().forEach(correlationEngine::analyze);
 
         correlationEngine.printStatistics();
         correlationEngine.getIndexNames().stream()
                 .flatMap(name -> correlationEngine.getIndex(name).stream())
-                .limit(100)
                 .flatMap(record ->
                         correlationEngine.correlate(record, 0.5)
                 ).sorted(Comparator.comparingDouble(Correlation::getScore))
@@ -71,8 +52,6 @@ public class Test {
                                 correlation.getScore(),
                                 Test.data.get(correlation.getSourceId()),
                                 Test.data.get(correlation.getTargetId()))));
-
-
     }
 
     private List<Document> getCSV() throws IOException {

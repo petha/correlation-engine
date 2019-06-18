@@ -1,4 +1,4 @@
-package Correlation;
+package Correlation.Model;
 
 import Correlation.Model.*;
 import Correlation.Extractor.VectorExtractor;
@@ -20,7 +20,7 @@ public class Analyzer {
     @NonNull
     private String name;
 
-    IndexRecord analyze(final Document document) {
+    public IndexRecord analyze(final Document document) {
         List<Integer> vector = this.extractorList.parallelStream()
                 .flatMap(extractor -> extractor.extract(document))
                 .collect(Collectors.toList());
@@ -32,7 +32,7 @@ public class Analyzer {
                 .build();
     }
 
-    void printStatistics() {
+    public void printStatistics() {
         extractorList.forEach(VectorExtractor::printStatistics);
     }
 }

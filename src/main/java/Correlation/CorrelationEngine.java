@@ -1,9 +1,6 @@
 package Correlation;
 
-import Correlation.Model.Correlation;
-import Correlation.Model.Document;
-import Correlation.Model.IndexRecord;
-import Correlation.Model.TermFrequency;
+import Correlation.Model.*;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -17,7 +14,7 @@ public class CorrelationEngine {
     @NonNull
     private List<Analyzer> analyzerList = new ArrayList<>();
 
-    private Map<String, Set<IndexRecord>> indices = new HashMap<>();
+    private Map<String, Set<IndexRecord>> indices = new ConcurrentHashMap<>();
     private Map<String, TermFrequency> termFrequencies = new ConcurrentHashMap<>();
 
     // Calculate term frequency for index, meaning, usual words will be supressed

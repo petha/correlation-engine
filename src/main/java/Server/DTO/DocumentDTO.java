@@ -1,8 +1,8 @@
 package Server.DTO;
 
+import Correlation.Model.Document;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import Correlation.Model.Document;
 
 import java.util.Map;
 import java.util.UUID;

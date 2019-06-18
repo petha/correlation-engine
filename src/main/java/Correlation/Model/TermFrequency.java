@@ -19,7 +19,7 @@ public class TermFrequency {
 
     // Calculate term frequency for index, meaning, usual words will be supressed
     // log(corpus length / term appearance)
-
+    // TODO: change TfIdf to be aware of which extractor dictionary used
     public double getTfIdf(int idx, long documents) {
         return Math.log(documents / (this.vector.get(idx)));
     }

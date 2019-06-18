@@ -1,11 +1,9 @@
 package Server.API;
 
 import Server.CorrelationService;
+import Server.DTO.AnalyzerDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class AnalyzeAPI {
     }
 
     @PostMapping
-    public void createAnalyzer() {
-        this.service.registerAnalyzer();
+    public void createAnalyzer(@RequestBody AnalyzerDTO analyzer) {
+        this.service.registerAnalyzer(analyzer);
     }
 }
