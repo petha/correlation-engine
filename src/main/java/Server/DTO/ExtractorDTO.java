@@ -4,7 +4,6 @@ import Correlation.Extractor.UniqWordsExtractor;
 import Correlation.Extractor.VectorExtractor;
 import lombok.Data;
 
-import java.io.IOException;
 import java.util.Map;
 
 @Data

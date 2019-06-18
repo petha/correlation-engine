@@ -115,7 +115,7 @@ public class CorrelationEngine {
         return Collections.unmodifiableList(this.analyzerList);
     }
 
-    public Correlation correlate(IndexRecord source, IndexRecord target) {
+    private Correlation correlate(IndexRecord source, IndexRecord target) {
         return Correlation.builder()
                 .sourceId(source.getId())
                 .targetId(target.getId())

@@ -31,7 +31,7 @@ public class UniqWordsExtractor extends VectorExtractor {
         this.transformer = transformer;
         this.filter = filter;
         InputStream modelStream = getClass().getResourceAsStream("/en-token.bin");
-        TokenizerModel model = null;
+        TokenizerModel model;
         try {
             model = new TokenizerModel(modelStream);
         } catch (IOException e) {
