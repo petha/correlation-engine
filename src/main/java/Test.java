@@ -27,7 +27,7 @@ public class Test {
                 .build();
     }
 
-    public static void main(String[] args) throws IOException, TikaException {
+    public static void main(String[] args) throws Exception {
         CorrelationEngine correlationEngine = new CorrelationEngine();
 
 

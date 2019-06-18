@@ -1,6 +1,5 @@
 package Correlation.Model;
 
-import Correlation.Model.*;
 import Correlation.Extractor.VectorExtractor;
 import lombok.*;
 

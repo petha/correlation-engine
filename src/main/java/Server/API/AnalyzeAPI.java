@@ -19,7 +19,7 @@ public class AnalyzeAPI {
     }
 
     @PostMapping
-    public void createAnalyzer(@RequestBody AnalyzerDTO analyzer) {
+    public void createAnalyzer(@RequestBody AnalyzerDTO analyzer) throws Exception {
         this.service.registerAnalyzer(analyzer);
     }
 }
