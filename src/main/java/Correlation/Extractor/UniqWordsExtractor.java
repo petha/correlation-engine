@@ -51,7 +51,7 @@ public class UniqWordsExtractor extends VectorExtractor {
         String content = this.getContent(document);
         String[] tokens = tokenizer.tokenize(content);
 
-        var amount = Arrays.stream(tokens)
+        Map<String, Long> amount = Arrays.stream(tokens)
                 .map(String::toLowerCase)
                 .map(this.transformer::transform)
                 .map(this.snowballStemmer::stem)

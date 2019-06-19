@@ -1,6 +1,6 @@
-import Correlation.Model.Analyzer;
 import Correlation.CorrelationEngine;
 import Correlation.Extractor.UniqWordsExtractor;
+import Correlation.Model.Analyzer;
 import Correlation.Model.Correlation;
 import Correlation.Model.Document;
 import org.apache.tika.Tika;
@@ -70,7 +70,7 @@ public class Test {
             Test.data.put(document.getId(), document.getFields().get("description"));
             nextLine = bufferedReader.readLine();
         }
-
+        
         return documents;
     }
 }
