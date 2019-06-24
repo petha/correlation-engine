@@ -1,6 +1,7 @@
 package Correlation.Extractor;
 
 import Correlation.Model.Document;
+import Correlation.Model.SparseVector;
 import lombok.NonNull;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.tokenize.TokenizerME;
@@ -13,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class KeywordExtractor extends VectorExtractor {
 
@@ -36,7 +36,7 @@ public class KeywordExtractor extends VectorExtractor {
     }
 
     @Override
-    public Stream<Integer> extract(Document document) {
+    public SparseVector extract(Document document) {
         String content = this.getContent(document);
         String[] tokens = tokenizer.tokenize(content);
 
@@ -46,11 +46,11 @@ public class KeywordExtractor extends VectorExtractor {
                 .map(CharSequence::toString)
                 .filter(this.keywords::contains)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-        return keywords.parallelStream()
-                .sorted()
-                .map(keyword -> amount.getOrDefault(keyword, 0L))
-                .map(Math::toIntExact);
+        return null;
+        //return keywords.parallelStream()
+        //       .sorted()
+        //       .map(keyword -> amount.getOrDefault(keyword, 0L))
+        //       .map(Math::toIntExact);
     }
 
     @Override

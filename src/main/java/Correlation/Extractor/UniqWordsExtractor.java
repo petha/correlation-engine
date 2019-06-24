@@ -1,6 +1,8 @@
 package Correlation.Extractor;
 
+import Correlation.Model.Dictionary;
 import Correlation.Model.Document;
+import Correlation.Model.SparseVector;
 import Correlation.Transformer.InputTransformer;
 import Correlation.Transformer.NullTransformer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
@@ -10,16 +12,13 @@ import opennlp.tools.tokenize.TokenizerModel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class UniqWordsExtractor extends VectorExtractor {
 
-    private LinkedHashSet<String> dictionary;
+    private Dictionary dictionary;
     private TokenizerME tokenizer;
     private SnowballStemmer snowballStemmer;
     private InputTransformer transformer;
@@ -39,7 +38,7 @@ public class UniqWordsExtractor extends VectorExtractor {
         }
         this.tokenizer = new TokenizerME(model);
         this.snowballStemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.ENGLISH);
-        this.dictionary = new LinkedHashSet<>();
+        this.dictionary = Dictionary.getInstance();
     }
 
     public UniqWordsExtractor(String sourceField) {
@@ -47,22 +46,22 @@ public class UniqWordsExtractor extends VectorExtractor {
     }
 
     @Override
-    public Stream<Integer> extract(Document document) {
+    public SparseVector extract(Document document) {
         String content = this.getContent(document);
         String[] tokens = tokenizer.tokenize(content);
+        SparseVector sparseVector = new SparseVector();
 
-        Map<String, Long> amount = Arrays.stream(tokens)
+        Arrays.stream(tokens)
                 .map(String::toLowerCase)
                 .map(this.transformer::transform)
                 .map(this.snowballStemmer::stem)
                 .map(CharSequence::toString)
                 .filter(this.filter)
                 .peek(keyword -> this.dictionary.add(keyword))
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-        return dictionary.parallelStream()
-                .map(keyword -> amount.getOrDefault(keyword, 0L))
-                .map(Math::toIntExact);
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .forEach((term, frequency) ->
+                        sparseVector.increment(this.dictionary.getIndex(term), Math.toIntExact(frequency)));
+        return sparseVector;
     }
 
     @Override

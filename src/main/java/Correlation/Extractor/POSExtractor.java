@@ -1,6 +1,7 @@
 package Correlation.Extractor;
 
 import Correlation.Model.Document;
+import Correlation.Model.SparseVector;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
@@ -27,7 +28,7 @@ public class POSExtractor extends VectorExtractor {
     }
 
     @Override
-    public Stream<Integer> extract(Document document) {
+    public SparseVector extract(Document document) {
 
         String[] whitespaceTokenizerLine = WhitespaceTokenizer.INSTANCE
                 .tokenize(document.getFields().get(this.sourceField));
@@ -39,8 +40,9 @@ public class POSExtractor extends VectorExtractor {
                                 Function.identity(),
                                 Collectors.counting()));
 
-        return Arrays.stream(this.tagger.getAllPosTags())
-                .map(tag -> tagging.getOrDefault(tag, 0L))
-                .map(Math::toIntExact);
+        //return Arrays.stream(this.tagger.getAllPosTags())
+        //        .map(tag -> tagging.getOrDefault(tag, 0L))
+        //        .map(Math::toIntExact);
+        return null;
     }
 }

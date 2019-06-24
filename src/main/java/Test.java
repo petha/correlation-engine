@@ -44,7 +44,7 @@ public class Test {
         correlationEngine.getIndexNames().stream()
                 .flatMap(name -> correlationEngine.getIndex(name).stream())
                 .flatMap(record ->
-                        correlationEngine.correlate(record, 0.5)
+                        correlationEngine.correlate(record, 0.6)
                 ).sorted(Comparator.comparingDouble(Correlation::getScore))
                 .collect(Collectors.toList())
                 .forEach(correlation -> System.out.println(
@@ -70,7 +70,7 @@ public class Test {
             Test.data.put(document.getId(), document.getFields().get("description"));
             nextLine = bufferedReader.readLine();
         }
-        
+
         return documents;
     }
 }

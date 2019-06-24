@@ -2,15 +2,16 @@ package Correlation.Model;
 
 import Correlation.Extractor.VectorExtractor;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class Analyzer {
     @NonNull
     @Builder.Default
@@ -19,10 +20,13 @@ public class Analyzer {
     @NonNull
     private String name;
 
-    public IndexRecord analyze(final Document document) {
-        List<Integer> vector = this.extractorList.parallelStream()
-                .flatMap(extractor -> extractor.extract(document))
-                .collect(Collectors.toList());
+    public synchronized IndexRecord analyze(final Document document) {
+        log.trace("Analyze document {}", document.getId());
+        SparseVector vector = this.extractorList.stream()
+                .map(ve -> ve.extract(document))
+                .reduce(new SparseVector(), SparseVector::merge);
+
+        Dictionary.getInstance().updateTermFrequency(vector);
 
         return IndexRecord.builder()
                 .id(document.getId())

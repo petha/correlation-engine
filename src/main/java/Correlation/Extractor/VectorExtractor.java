@@ -1,8 +1,7 @@
 package Correlation.Extractor;
 
 import Correlation.Model.Document;
-
-import java.util.stream.Stream;
+import Correlation.Model.SparseVector;
 
 public abstract class VectorExtractor {
     private String sourceField;
@@ -15,6 +14,8 @@ public abstract class VectorExtractor {
         return document.getFields().getOrDefault(this.sourceField, "");
     }
 
-    public abstract Stream<Integer> extract(Document document);
-    public void printStatistics(){}
+    public abstract SparseVector extract(Document document);
+
+    public void printStatistics() {
+    }
 }
