@@ -1,4 +1,4 @@
-#The Correlation Engine
+# The Correlation Engine
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/def17503fa5eafb0f32e/maintainability)](https://codeclimate.com/github/petha/correlation-engine/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/def17503fa5eafb0f32e/test_coverage)](https://codeclimate.com/github/petha/correlation-engine/test_coverage)
