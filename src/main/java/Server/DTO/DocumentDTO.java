@@ -9,7 +9,6 @@ import java.util.UUID;
 
 @Data
 public class DocumentDTO {
-    private String typeName;
     private Map<String, String> fields;
 
     @JsonIgnore
@@ -17,7 +16,6 @@ public class DocumentDTO {
         return Document.builder()
                 .id(UUID.randomUUID())
                 .fields(fields)
-                .typeName(typeName)
                 .build();
     }
 }

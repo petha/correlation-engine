@@ -1,13 +1,22 @@
 package Correlation.Model;
 
 import com.google.common.collect.Sets;
+import correlation.protobufs.Protobufs;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class SparseVector {
     // Term Index -> Frequency
     private HashMap<Integer, Integer> values = new HashMap<>();
+
+    public SparseVector() {
+    }
+
+    public SparseVector(Map<Integer, Integer> vector) {
+        this.values = new HashMap<>(vector);
+    }
 
     public Integer get(int index) {
         return this.values.get(index);
@@ -47,6 +56,12 @@ public class SparseVector {
                 .reduce(0.0, Double::sum);
 
         return dotProduct / (Math.sqrt(this.norm()) * Math.sqrt(that.norm()));
+    }
+
+    public Protobufs.SparseVector getAsProtobuf() {
+        return Protobufs.SparseVector.newBuilder()
+                .putAllVector(values)
+                .build();
     }
 
     @Override

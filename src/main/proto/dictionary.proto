@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package tutorial;
+
+option java_package = "correlation.protobufs";
+option java_outer_classname = "Protobufs";
+
+message Term {
+  int32 id = 1;
+  string name = 2;
+}
+
+message DocumentFrequency {
+  int32 documents = 1;
+  SparseVector frequency = 2;
+}
+
+message SparseVector {
+  map<int32, int32> vector = 1;
+}

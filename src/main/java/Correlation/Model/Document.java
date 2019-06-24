@@ -10,6 +10,5 @@ import java.util.UUID;
 @Builder
 public class Document {
     private UUID id;
-    private String typeName;
     private Map<String, String> fields;
 }
