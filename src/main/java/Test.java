@@ -1,7 +1,6 @@
 import Correlation.CorrelationEngine;
 import Correlation.Extractor.UniqWordsExtractor;
 import Correlation.Model.Analyzer;
-import Correlation.Model.Correlation;
 import Correlation.Model.Document;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
@@ -12,7 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Test {
     private static final Map<UUID, String> data = new HashMap<>();
@@ -38,20 +36,12 @@ public class Test {
         );
 
         Test test = new Test();
-        test.getCSV().forEach(correlationEngine::analyze);
-
+        for (int i = 0; i < 500; i++) {
+            test.getCSV().forEach(correlationEngine::analyze);
+        }
         correlationEngine.printStatistics();
-        correlationEngine.getIndexNames().stream()
-                .flatMap(name -> correlationEngine.getIndex(name).stream())
-                .flatMap(record ->
-                        correlationEngine.correlate(record, 0.6)
-                ).sorted(Comparator.comparingDouble(Correlation::getScore))
-                .collect(Collectors.toList())
-                .forEach(correlation -> System.out.println(
-                        String.format("Correlation: %f\n%s\n%s\n\n",
-                                correlation.getScore(),
-                                Test.data.get(correlation.getSourceId()),
-                                Test.data.get(correlation.getTargetId()))));
+        correlationEngine.shutdown();
+
     }
 
     private List<Document> getCSV() throws IOException {

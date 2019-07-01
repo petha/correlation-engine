@@ -27,7 +27,9 @@ public class CorrelationService {
     }
 
     public Stream<MatchDTO> findMatches(UUID id, String analyze, double cutOff) {
-        return ENGINE.correlate(id, analyze, cutOff).map(MatchDTO::fromCorrelation);
+        return ENGINE.correlate(id, analyze, cutOff).stream()
+                .limit(40)
+                .map(MatchDTO::fromCorrelation);
     }
 
     public List<String> getAnalyzers() {

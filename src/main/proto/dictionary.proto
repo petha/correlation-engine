@@ -18,3 +18,9 @@ message DocumentFrequency {
 message SparseVector {
   map<int32, int32> vector = 1;
 }
+
+message IndexRecord {
+  string id = 1;
+  string name = 4;
+  SparseVector vector = 5;
+}

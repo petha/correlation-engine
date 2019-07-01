@@ -44,6 +44,7 @@ public class Dictionary {
                 this.terms.put(term.getName(), term.getId());
             }
             log.info("Read {} terms", this.terms.size());
+            // Reset current index
         } catch (FileNotFoundException e) {
             log.info("The dictionary database was not found");
         } catch (IOException e) {
