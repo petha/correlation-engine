@@ -9,6 +9,10 @@ jobs:
     steps:
       - checkout
       - run: sudo apt install protobuf-compiler
+      - run: curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.8.0/protoc-3.8.0-linux-x86_64.zip
+      - run: unzip protoc-3.8.0-linux-x86_64.zip -d protoc3
+      - run: sudo mv protoc3/bin/* /usr/local/bin/
+      - run: sudo mv protoc3/include/* /usr/local/include/
       - run: mvn dependency:go-offline
       - run: mvn package # run the actual tests
       - run: mvn sonar:sonar -Dsonar.projectKey=petha_correlation-engine -Dsonar.organization=petha-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login={$SONAR}
