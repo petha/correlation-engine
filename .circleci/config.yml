@@ -15,4 +15,4 @@ jobs:
       - run: sudo mv protoc3/include/* /usr/local/include/
       - run: mvn dependency:go-offline
       - run: mvn package # run the actual tests
-      - run: mvn sonar:sonar -Dsonar.projectKey=petha_correlation-engine -Dsonar.organization=petha-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login={$SONAR}
+      - run: mvn sonar:sonar -Dsonar.projectKey=petha_correlation-engine -Dsonar.organization=petha-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login = $SONAR
