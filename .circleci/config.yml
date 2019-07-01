@@ -1,15 +1,27 @@
 # Use the latest 2.1 version of CircleCI pipeline processing engine, see https://circleci.com/docs/2.0/configuration-reference/
 version: 2.1
 
-# Use a package of configuration called an orb, see https://circleci.com/docs/2.0/orb-intro/
-orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.3.1
+jobs:
+  build:
+    working_directory: ~/circleci-demo-java-spring
+    docker:
+      - image: circleci/openjdk:11.0.3-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          key: circleci-{{ checksum "pom.xml" }}
+      - run: mvn dependency:go-offline
+      - save_cache: # saves the project dependencies
+        paths:
+          - ~/.m2
+        key: circleci-{{ checksum "pom.xml" }}
+      - run: mvn package # run the actual tests
+      - run: mvn sonar:sonar -Dsonar.projectKey=petha_correlation-engine -Dsonar.organization=petha-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login={$SONAR}
 
-# Orchestrate or schedule a set of jobs, see https://circleci.com/docs/2.0/workflows/
-workflows:
-  # Name the workflow "Welcome"
-  Welcome:
-    # Run the welcome/run job in its own container
-    jobs:
-      - welcome/run
+       - store_test_results: # uploads the test metadata from the `target/surefire-reports` directory so that it can show up in the CircleCI dashboard.
+        path: target/surefire-reports
+
+      - store_artifacts: # store the uberjar as an artifact
+          path: target/demo-java-spring-0.0.1-SNAPSHOT.jar
+
+    
