@@ -18,28 +18,28 @@ import java.util.stream.Stream;
 @Service()
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class CorrelationService {
-    private CorrelationEngine ENGINE = new CorrelationEngine();
+    private CorrelationEngine engine = new CorrelationEngine();
 
     public UUID indexDocument(DocumentDTO dto) {
         Document document = dto.getDocument();
-        ENGINE.analyze(document);
+        engine.analyze(document);
         return document.getId();
     }
 
     public Stream<MatchDTO> findMatches(UUID id, String analyze, double cutOff) {
-        return ENGINE.correlate(id, analyze, cutOff).stream()
+        return engine.correlate(id, analyze, cutOff).stream()
                 .limit(40)
                 .map(MatchDTO::fromCorrelation);
     }
 
     public List<String> getAnalyzers() {
-        return ENGINE.getAnalyzers().stream()
+        return engine.getAnalyzers().stream()
                 .map(Analyzer::getName)
                 .collect(Collectors.toList());
     }
 
     public void registerAnalyzer(AnalyzerDTO analyzerDTO) throws Exception {
-        ENGINE.addAnalyzer(analyzerDTO.getAnalyzer());
+        engine.addAnalyzer(analyzerDTO.getAnalyzer());
     }
 
     // TODO: add drop document and update document
