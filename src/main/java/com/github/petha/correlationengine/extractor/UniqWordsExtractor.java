@@ -48,6 +48,7 @@ public class UniqWordsExtractor extends VectorExtractor {
         this(sourceField, new NullTransformer(), ignore -> true);
     }
 
+    @SuppressWarnings("squid:S3864")
     @Override
     public SparseVector extract(Document document) {
         String content = this.getContent(document);

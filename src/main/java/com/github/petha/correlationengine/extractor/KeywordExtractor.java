@@ -40,6 +40,7 @@ public class KeywordExtractor extends VectorExtractor {
         this.dictionary = Dictionary.getInstance();
     }
 
+    @SuppressWarnings("squid:S3864")
     @Override
     public SparseVector extract(Document document) {
         String content = this.getContent(document);
