@@ -37,7 +37,7 @@ public class Dictionary {
         return instance;
     }
 
-    private void readDictionaryTerms(String fileName) throws ApplicationException {
+    private void readDictionaryTerms(String fileName) {
         try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.terms", fileName))) {
             while (true) {
                 Protobufs.Term term = Protobufs.Term.parseDelimitedFrom(fileInputStream);
@@ -53,7 +53,7 @@ public class Dictionary {
         }
     }
 
-    private void readDictionaryIdf(String fileName) throws ApplicationException {
+    private void readDictionaryIdf(String fileName) {
         try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.idf", fileName))) {
             Protobufs.DocumentFrequency documentFrequency = Protobufs.DocumentFrequency.parseFrom(fileInputStream);
             this.documents = documentFrequency.getDocuments();

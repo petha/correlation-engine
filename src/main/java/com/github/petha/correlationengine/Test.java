@@ -3,35 +3,25 @@ package com.github.petha.correlationengine;
 import com.github.petha.correlationengine.extractor.UniqWordsExtractor;
 import com.github.petha.correlationengine.model.Analyzer;
 import com.github.petha.correlationengine.model.Document;
-import org.apache.tika.Tika;
-import org.apache.tika.exception.TikaException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class Test {
-    private static final Map<UUID, String> data = new HashMap<>();
-
-    public static Document getContent(String url) throws TikaException, IOException {
-        Tika tika = new Tika();
-        String content = tika.parseToString(new URL(url));
-
-        return Document.builder()
-                .fields(Map.of("description", content))
-                .id(UUID.randomUUID())
-                .build();
-    }
+    private static final String DESCRIPTION = "description";
 
     public static void main(String[] args) throws Exception {
         CorrelationEngine correlationEngine = new CorrelationEngine();
 
 
         correlationEngine.addAnalyzer(Analyzer.builder()
-                .extractorList(List.of(new UniqWordsExtractor("description")))
+                .extractorList(List.of(new UniqWordsExtractor(DESCRIPTION)))
                 .name("UniqWords")
                 .build()
         );
@@ -54,11 +44,10 @@ public class Test {
         while (nextLine != null) {
             // nextLine[] is an array of values from the line
             Document document = Document.builder()
-                    .fields(Map.of("description", nextLine))
+                    .fields(Map.of(DESCRIPTION, nextLine))
                     .id(UUID.randomUUID())
                     .build();
             documents.add(document);
-            Test.data.put(document.getId(), document.getFields().get("description"));
             nextLine = bufferedReader.readLine();
         }
 

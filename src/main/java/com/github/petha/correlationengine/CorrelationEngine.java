@@ -61,7 +61,7 @@ public class CorrelationEngine {
         return Collections.unmodifiableSet(this.analyzers.getKeys());
     }
 
-    public void addAnalyzer(Analyzer analyzer) throws Exception {
+    public void addAnalyzer(Analyzer analyzer) {
 
         boolean analyzerExists = this.analyzerList.stream().anyMatch(existingAnalyzer ->
                 existingAnalyzer
@@ -69,7 +69,7 @@ public class CorrelationEngine {
                         .equals(analyzer.getName()));
 
         if (analyzerExists) {
-            throw new Exception("The analyzer already exists");
+            throw new ApplicationException("The analyzer already exists");
         }
         this.analyzers.put(analyzer.getName(), "".getBytes());
         this.analyzerList.add(analyzer);
