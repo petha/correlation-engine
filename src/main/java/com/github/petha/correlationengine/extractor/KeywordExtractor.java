@@ -1,5 +1,6 @@
 package com.github.petha.correlationengine.extractor;
 
+import com.github.petha.correlationengine.model.Dictionary;
 import com.github.petha.correlationengine.model.Document;
 import com.github.petha.correlationengine.model.SparseVector;
 import lombok.NonNull;
@@ -11,7 +12,6 @@ import opennlp.tools.tokenize.TokenizerModel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,6 +23,7 @@ public class KeywordExtractor extends VectorExtractor {
     private Set<String> keywords;
     private TokenizerME tokenizer;
     private SnowballStemmer snowballStemmer;
+    private Dictionary dictionary;
 
     public KeywordExtractor(String sourceField, Set<String> keywords) throws IOException {
         super(sourceField);
@@ -35,24 +36,26 @@ public class KeywordExtractor extends VectorExtractor {
                 .map(snowballStemmer::stem)
                 .map(CharSequence::toString)
                 .collect(Collectors.toSet());
+
+        this.dictionary = Dictionary.getInstance();
     }
 
     @Override
     public SparseVector extract(Document document) {
         String content = this.getContent(document);
         String[] tokens = tokenizer.tokenize(content);
+        SparseVector sparseVector = new SparseVector();
 
-        Map<String, Long> amount = Arrays.stream(tokens)
+        Arrays.stream(tokens)
                 .map(String::toLowerCase)
                 .map(this.snowballStemmer::stem)
                 .map(CharSequence::toString)
                 .filter(this.keywords::contains)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        return null;
-        //return keywords.parallelStream()
-        //       .sorted()
-        //       .map(keyword -> amount.getOrDefault(keyword, 0L))
-        //       .map(Math::toIntExact);
+                .peek(this.dictionary::add)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .forEach((term, frequency) ->
+                        sparseVector.increment(this.dictionary.getIndex(term), Math.toIntExact(frequency)));
+        return sparseVector;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.github.petha.correlationengine;
 
+import com.github.petha.correlationengine.exceptions.ApplicationException;
 import com.github.petha.correlationengine.model.Analyzer;
 import com.github.petha.correlationengine.model.Correlation;
 import com.github.petha.correlationengine.model.Document;
@@ -112,14 +113,14 @@ public class CorrelationEngine {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("Could not read the stream");
+            throw new ApplicationException("Could not read the stream");
         }
     }
 
     public List<Correlation> correlate(UUID sourceId, String analyzer, double cutOff) {
         return this.getVector(sourceId, analyzer)
                 .map(v -> this.correlate(v, cutOff))
-                .orElseThrow(() -> new RuntimeException("Record not found"));
+                .orElseThrow(() -> new ApplicationException("Record not found"));
     }
 
     public List<Correlation> correlate(IndexRecord source, double cutOff) {
@@ -132,7 +133,7 @@ public class CorrelationEngine {
                     .sorted(Comparator.comparingDouble(Correlation::getScore).reversed())
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            throw new RuntimeException("Could not read the stream");
+            throw new ApplicationException("Could not read the stream");
         }
     }
 

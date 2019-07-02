@@ -1,5 +1,6 @@
 package com.github.petha.correlationengine.extractor;
 
+import com.github.petha.correlationengine.exceptions.ApplicationException;
 import com.github.petha.correlationengine.model.Dictionary;
 import com.github.petha.correlationengine.model.Document;
 import com.github.petha.correlationengine.model.SparseVector;
@@ -36,7 +37,7 @@ public class UniqWordsExtractor extends VectorExtractor {
         try {
             model = new TokenizerModel(modelStream);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot read token model");
+            throw new ApplicationException("Cannot read token model");
         }
         this.tokenizer = new TokenizerME(model);
         this.snowballStemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.ENGLISH);
@@ -59,7 +60,7 @@ public class UniqWordsExtractor extends VectorExtractor {
                 .map(this.snowballStemmer::stem)
                 .map(CharSequence::toString)
                 .filter(this.filter)
-                .peek(keyword -> this.dictionary.add(keyword))
+                .peek(this.dictionary::add)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .forEach((term, frequency) ->
                         sparseVector.increment(this.dictionary.getIndex(term), Math.toIntExact(frequency)));

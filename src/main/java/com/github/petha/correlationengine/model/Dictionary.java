@@ -1,6 +1,7 @@
 package com.github.petha.correlationengine.model;
 
 
+import com.github.petha.correlationengine.exceptions.ApplicationException;
 import correlation.protobufs.Protobufs;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +29,7 @@ public class Dictionary {
         try {
             this.termStorage = new FileOutputStream(String.format("%s.terms", fileName), true);
         } catch (IOException e) {
-            throw new RuntimeException("The term database could not be opened");
+            throw new ApplicationException("The term database could not be opened");
         }
     }
 
@@ -36,7 +37,7 @@ public class Dictionary {
         return instance;
     }
 
-    private void readDictionaryTerms(String fileName) throws RuntimeException {
+    private void readDictionaryTerms(String fileName) throws ApplicationException {
         try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.terms", fileName))) {
             while (true) {
                 Protobufs.Term term = Protobufs.Term.parseDelimitedFrom(fileInputStream);
@@ -48,11 +49,11 @@ public class Dictionary {
         } catch (FileNotFoundException e) {
             log.info("The dictionary database was not found");
         } catch (IOException e) {
-            throw new RuntimeException("Error reading the dictionary");
+            throw new ApplicationException("Error reading the dictionary");
         }
     }
 
-    private void readDictionaryIdf(String fileName) throws RuntimeException {
+    private void readDictionaryIdf(String fileName) throws ApplicationException {
         try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.idf", fileName))) {
             Protobufs.DocumentFrequency documentFrequency = Protobufs.DocumentFrequency.parseFrom(fileInputStream);
             this.documents = documentFrequency.getDocuments();
@@ -61,7 +62,7 @@ public class Dictionary {
         } catch (FileNotFoundException e) {
             log.info("The document frequency was not found");
         } catch (IOException e) {
-            throw new RuntimeException("Error reading the document frequency table");
+            throw new ApplicationException("Error reading the document frequency table");
         }
     }
 
@@ -88,7 +89,7 @@ public class Dictionary {
             try {
                 build.writeDelimitedTo(this.termStorage);
             } catch (IOException e) {
-                throw new RuntimeException("The term database could not be written to");
+                throw new ApplicationException("The term database could not be written to");
             }
             this.terms.put(term, currentIndex++);
         }

@@ -1,5 +1,6 @@
 package com.github.petha.correlationengine.server.dto;
 
+import com.github.petha.correlationengine.exceptions.ApplicationException;
 import com.github.petha.correlationengine.extractor.UniqWordsExtractor;
 import com.github.petha.correlationengine.extractor.VectorExtractor;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class ExtractorDTO {
         if ("uniq_words".equals(this.getName())) {
             return new UniqWordsExtractor(this.getSourceField());
         }
-        throw new RuntimeException("No matching extractor");
+        throw new ApplicationException("No matching extractor");
     }
 
 }
