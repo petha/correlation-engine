@@ -1,9 +1,9 @@
-package Correlation;
+package com.github.petha.correlationengine;
 
-import Correlation.Model.Analyzer;
-import Correlation.Model.Correlation;
-import Correlation.Model.Document;
-import Correlation.Model.IndexRecord;
+import com.github.petha.correlationengine.model.Analyzer;
+import com.github.petha.correlationengine.model.Correlation;
+import com.github.petha.correlationengine.model.Document;
+import com.github.petha.correlationengine.model.IndexRecord;
 import correlation.protobufs.Protobufs;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

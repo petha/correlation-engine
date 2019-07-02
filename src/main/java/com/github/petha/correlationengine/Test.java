@@ -1,7 +1,8 @@
-import Correlation.CorrelationEngine;
-import Correlation.Extractor.UniqWordsExtractor;
-import Correlation.Model.Analyzer;
-import Correlation.Model.Document;
+package com.github.petha.correlationengine;
+
+import com.github.petha.correlationengine.extractor.UniqWordsExtractor;
+import com.github.petha.correlationengine.model.Analyzer;
+import com.github.petha.correlationengine.model.Document;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 

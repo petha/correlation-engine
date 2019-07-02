@@ -1,4 +1,4 @@
-package Correlation.Transformer;
+package com.github.petha.correlationengine.transformer;
 
 public class NullTransformer extends InputTransformer {
     @Override

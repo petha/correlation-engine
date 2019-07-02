@@ -1,11 +1,11 @@
-package Server;
+package com.github.petha.correlationengine.server;
 
-import Correlation.Model.Analyzer;
-import Correlation.CorrelationEngine;
-import Correlation.Model.Document;
-import Server.DTO.AnalyzerDTO;
-import Server.DTO.DocumentDTO;
-import Server.DTO.MatchDTO;
+import com.github.petha.correlationengine.model.Analyzer;
+import com.github.petha.correlationengine.CorrelationEngine;
+import com.github.petha.correlationengine.model.Document;
+import com.github.petha.correlationengine.server.dto.AnalyzerDTO;
+import com.github.petha.correlationengine.server.dto.DocumentDTO;
+import com.github.petha.correlationengine.server.dto.MatchDTO;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

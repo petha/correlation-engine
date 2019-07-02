@@ -1,4 +1,4 @@
-package Correlation.Model;
+package com.github.petha.correlationengine.model;
 
 
 import correlation.protobufs.Protobufs;

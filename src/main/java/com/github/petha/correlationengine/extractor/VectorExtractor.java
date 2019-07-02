@@ -1,7 +1,7 @@
-package Correlation.Extractor;
+package com.github.petha.correlationengine.extractor;
 
-import Correlation.Model.Document;
-import Correlation.Model.SparseVector;
+import com.github.petha.correlationengine.model.Document;
+import com.github.petha.correlationengine.model.SparseVector;
 
 public abstract class VectorExtractor {
     private String sourceField;

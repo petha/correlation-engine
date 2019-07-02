@@ -1,6 +1,6 @@
-package Correlation.Model;
+package com.github.petha.correlationengine.model;
 
-import Correlation.Extractor.VectorExtractor;
+import com.github.petha.correlationengine.extractor.VectorExtractor;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 

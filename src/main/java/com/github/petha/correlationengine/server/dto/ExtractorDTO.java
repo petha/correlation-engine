@@ -1,7 +1,7 @@
-package Server.DTO;
+package com.github.petha.correlationengine.server.dto;
 
-import Correlation.Extractor.UniqWordsExtractor;
-import Correlation.Extractor.VectorExtractor;
+import com.github.petha.correlationengine.extractor.UniqWordsExtractor;
+import com.github.petha.correlationengine.extractor.VectorExtractor;
 import lombok.Data;
 
 import java.util.Map;

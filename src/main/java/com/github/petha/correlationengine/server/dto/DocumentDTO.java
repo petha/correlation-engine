@@ -1,6 +1,6 @@
-package Server.DTO;
+package com.github.petha.correlationengine.server.dto;
 
-import Correlation.Model.Document;
+import com.github.petha.correlationengine.model.Document;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

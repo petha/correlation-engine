@@ -1,10 +1,10 @@
-package Correlation.Extractor;
+package com.github.petha.correlationengine.extractor;
 
-import Correlation.Model.Dictionary;
-import Correlation.Model.Document;
-import Correlation.Model.SparseVector;
-import Correlation.Transformer.InputTransformer;
-import Correlation.Transformer.NullTransformer;
+import com.github.petha.correlationengine.model.Dictionary;
+import com.github.petha.correlationengine.model.Document;
+import com.github.petha.correlationengine.model.SparseVector;
+import com.github.petha.correlationengine.transformer.InputTransformer;
+import com.github.petha.correlationengine.transformer.NullTransformer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;

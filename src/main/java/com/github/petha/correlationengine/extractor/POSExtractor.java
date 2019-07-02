@@ -1,7 +1,7 @@
-package Correlation.Extractor;
+package com.github.petha.correlationengine.extractor;
 
-import Correlation.Model.Document;
-import Correlation.Model.SparseVector;
+import com.github.petha.correlationengine.model.Document;
+import com.github.petha.correlationengine.model.SparseVector;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class POSExtractor extends VectorExtractor {
 

@@ -1,7 +1,7 @@
-package Server.API;
+package com.github.petha.correlationengine.server.api;
 
-import Server.CorrelationService;
-import Server.DTO.AnalyzerDTO;
+import com.github.petha.correlationengine.server.CorrelationService;
+import com.github.petha.correlationengine.server.dto.AnalyzerDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
