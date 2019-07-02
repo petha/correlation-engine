@@ -45,7 +45,7 @@ public class UniqWordsExtractor extends VectorExtractor {
     }
 
     public UniqWordsExtractor(String sourceField) {
-        this(sourceField, new NullTransformer(), (ignore) -> true);
+        this(sourceField, new NullTransformer(), ignore -> true);
     }
 
     @Override

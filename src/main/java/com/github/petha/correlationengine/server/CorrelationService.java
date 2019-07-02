@@ -38,7 +38,7 @@ public class CorrelationService {
                 .collect(Collectors.toList());
     }
 
-    public void registerAnalyzer(AnalyzerDTO analyzerDTO) throws Exception {
+    public void registerAnalyzer(AnalyzerDTO analyzerDTO) {
         engine.addAnalyzer(analyzerDTO.getAnalyzer());
     }
 

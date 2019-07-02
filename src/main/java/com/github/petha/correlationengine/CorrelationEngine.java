@@ -106,11 +106,9 @@ public class CorrelationEngine {
                 return Optional.empty();
             }
 
-            long skipped = 0;
-            do {
-                skipped = fileInputStream.skip(offset);
+            while (offset > 0) {
+                offset -= fileInputStream.skip(offset);
             }
-            while((offset -= skipped) > 0);
 
             Protobufs.IndexRecord indexRecord = Protobufs.IndexRecord.parseDelimitedFrom(fileInputStream);
             if (indexRecord == null) return Optional.empty();
