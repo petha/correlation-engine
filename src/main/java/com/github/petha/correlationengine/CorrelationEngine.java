@@ -33,6 +33,7 @@ public class CorrelationEngine {
     public CorrelationEngine() {
         this.db = DBMaker.fileDB("data.db")
                 .fileMmapEnable()
+                .transactionEnable()
                 .make();
 
         this.analyzers = this.db.hashMap("analyzers")
