@@ -95,7 +95,7 @@ public class CorrelationEngine {
             indexRecord.getAsProtobuf().writeDelimitedTo(fileOutputStream);
             this.index.get(indexRecord.getName()).put(indexRecord.getId(), position);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.info("Exception thrown", e);
         }
     }
 
@@ -106,13 +106,18 @@ public class CorrelationEngine {
                 return Optional.empty();
             }
 
-            fileInputStream.skip(offset);
+            long skipped = 0;
+            do {
+                skipped = fileInputStream.skip(offset);
+            }
+            while((offset -= skipped) > 0);
+
             Protobufs.IndexRecord indexRecord = Protobufs.IndexRecord.parseDelimitedFrom(fileInputStream);
             if (indexRecord == null) return Optional.empty();
             return Optional.of(IndexRecord.fromProtobuf(indexRecord));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.info("Get vector exception", e);
             throw new ApplicationException("Could not read the stream");
         }
     }
