@@ -5,6 +5,7 @@ import com.github.petha.correlationengine.model.Document;
 import com.github.petha.correlationengine.model.SparseVector;
 import com.github.petha.correlationengine.transformer.InputTransformer;
 import com.github.petha.correlationengine.transformer.NullTransformer;
+import lombok.extern.slf4j.Slf4j;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
@@ -16,6 +17,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class UniqWordsExtractor extends VectorExtractor {
 
     private Dictionary dictionary;
@@ -66,8 +68,6 @@ public class UniqWordsExtractor extends VectorExtractor {
 
     @Override
     public void printStatistics() {
-        System.out.println(
-                String.format(
-                        "UniqWordsExtractor: Dict: %s", this.dictionary));
+        log.info("UniqWordsExtractor: Dict: {}", this.dictionary);
     }
 }

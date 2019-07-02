@@ -3,6 +3,7 @@ package com.github.petha.correlationengine.extractor;
 import com.github.petha.correlationengine.model.Document;
 import com.github.petha.correlationengine.model.SparseVector;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class KeywordExtractor extends VectorExtractor {
 
     @NonNull
@@ -55,8 +57,6 @@ public class KeywordExtractor extends VectorExtractor {
 
     @Override
     public void printStatistics() {
-        System.out.println(
-                String.format(
-                        "KeywordExtractor: Dict: %s", this.keywords));
+        log.info("KeywordExtractor: Dict: {}", this.keywords);
     }
 }
