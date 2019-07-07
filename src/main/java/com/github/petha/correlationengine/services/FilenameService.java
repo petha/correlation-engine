@@ -53,7 +53,8 @@ public class FilenameService {
         Paths.get(this.basePath).toFile().mkdirs();
 
         if (analyzer != null && checkFilenameCorrect(analyzer)) {
-            Paths.get(this.basePath, analyzer).toFile().mkdirs();
+            String fileName = Paths.get(analyzer).getFileName().toString();
+            Paths.get(this.basePath, fileName).toFile().mkdirs();
         }
     }
 }
