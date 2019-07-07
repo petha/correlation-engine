@@ -2,17 +2,17 @@ package com.github.petha.correlationengine.model;
 
 import com.google.common.collect.Sets;
 import correlation.protobufs.Protobufs;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
+@NoArgsConstructor
 public class SparseVector {
     // Term Index -> Frequency
     private HashMap<Integer, Integer> values = new HashMap<>();
-
-    public SparseVector() {
-    }
 
     public SparseVector(Map<Integer, Integer> vector) {
         this.values = new HashMap<>(vector);
@@ -36,8 +36,7 @@ public class SparseVector {
         }
     }
 
-    private double norm() {
-        Dictionary dictionary = Dictionary.getInstance();
+    private double norm(Dictionary dictionary) {
         return this.values.entrySet().stream()
                 .map(entry -> entry.getValue() * dictionary.getIdf(entry.getKey()))
                 .reduce(0.0, (acc, val) -> acc + Math.pow(val, 2));
@@ -48,14 +47,13 @@ public class SparseVector {
         return this;
     }
 
-    public double cosineSimilarity(SparseVector that) {
+    public double cosineSimilarity(SparseVector that, Dictionary dictionary) {
         Sets.SetView<Integer> intersection = Sets.intersection(this.values.keySet(), that.values.keySet());
-        Dictionary dictionary = Dictionary.getInstance();
         double dotProduct = intersection.stream()
                 .map(index -> this.values.get(index) * that.values.get(index) * Math.pow(dictionary.getIdf(index), 2))
                 .reduce(0.0, Double::sum);
 
-        return dotProduct / (Math.sqrt(this.norm()) * Math.sqrt(that.norm()));
+        return dotProduct / (Math.sqrt(this.norm(dictionary)) * Math.sqrt(that.norm(dictionary)));
     }
 
     public Protobufs.SparseVector getAsProtobuf() {

@@ -3,6 +3,7 @@ package com.github.petha.correlationengine.server.dto;
 import com.github.petha.correlationengine.exceptions.ApplicationException;
 import com.github.petha.correlationengine.extractor.UniqWordsExtractor;
 import com.github.petha.correlationengine.extractor.VectorExtractor;
+import com.github.petha.correlationengine.model.Dictionary;
 import lombok.Data;
 
 import java.util.Map;
@@ -14,9 +15,9 @@ public class ExtractorDTO {
     private Map<String, String> properties;
 
 
-    public VectorExtractor getKeywordExtractor() {
+    public VectorExtractor getKeywordExtractor(Dictionary dictionary) {
         if ("uniq_words".equals(this.getName())) {
-            return new UniqWordsExtractor(this.getSourceField());
+            return new UniqWordsExtractor(this.getSourceField(), dictionary);
         }
         throw new ApplicationException("No matching extractor");
     }

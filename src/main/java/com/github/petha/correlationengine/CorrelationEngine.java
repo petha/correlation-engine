@@ -1,17 +1,16 @@
 package com.github.petha.correlationengine;
 
 import com.github.petha.correlationengine.exceptions.ApplicationException;
-import com.github.petha.correlationengine.model.Analyzer;
-import com.github.petha.correlationengine.model.Correlation;
-import com.github.petha.correlationengine.model.Document;
-import com.github.petha.correlationengine.model.IndexRecord;
+import com.github.petha.correlationengine.model.Dictionary;
+import com.github.petha.correlationengine.model.*;
+import com.github.petha.correlationengine.services.DictionaryService;
 import correlation.protobufs.Protobufs;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
 import org.mapdb.Serializer;
+import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,15 +21,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
+@Service
 public class CorrelationEngine {
+    private DictionaryService dictionaryService;
 
-    @NonNull
     private List<Analyzer> analyzerList = new ArrayList<>();
     private HTreeMap<String, byte[]> analyzers;
     private Map<String, ConcurrentMap<UUID, Long>> index = new HashMap<>();
     private DB db;
 
-    public CorrelationEngine() {
+    public CorrelationEngine(DictionaryService dictionaryService) {
         this.db = DBMaker.fileDB("data.db")
                 .fileMmapEnable()
                 .transactionEnable()
@@ -44,6 +44,7 @@ public class CorrelationEngine {
         this.analyzers.keySet().forEach(name -> this.index.put(name, this.db
                 .hashMap(name, Serializer.UUID, Serializer.LONG)
                 .createOrOpen()));
+        this.dictionaryService = dictionaryService;
     }
 
     public Stream<IndexRecord> getIndex(FileInputStream fileInput) {
@@ -128,11 +129,12 @@ public class CorrelationEngine {
     }
 
     public List<Correlation> correlate(IndexRecord source, double cutOff) {
+        Dictionary dictionary = this.dictionaryService.getDictionary();
         try (FileInputStream fileInputStream = new FileInputStream(source.getName())) {
             return this.getIndex(fileInputStream)
                     .takeWhile(Objects::nonNull)
                     .filter(indexRecord -> !indexRecord.getId().equals(source.getId()))
-                    .map(target -> this.correlate(source, target))
+                    .map(target -> this.correlate(source, target, dictionary))
                     .filter(correlation -> correlation.getScore() > cutOff)
                     .sorted(Comparator.comparingDouble(Correlation::getScore).reversed())
                     .collect(Collectors.toList());
@@ -145,11 +147,11 @@ public class CorrelationEngine {
         return Collections.unmodifiableList(this.analyzerList);
     }
 
-    private Correlation correlate(IndexRecord source, IndexRecord target) {
+    private Correlation correlate(IndexRecord source, IndexRecord target, Dictionary dictionary) {
         return Correlation.builder()
                 .sourceId(source.getId())
                 .targetId(target.getId())
-                .score(source.getVector().cosineSimilarity(target.getVector()))
+                .score(source.getVector().cosineSimilarity(target.getVector(), dictionary))
                 .build();
     }
 

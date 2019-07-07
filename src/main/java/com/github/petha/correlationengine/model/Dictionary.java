@@ -4,6 +4,7 @@ package com.github.petha.correlationengine.model;
 import com.github.petha.correlationengine.exceptions.ApplicationException;
 import correlation.protobufs.Protobufs;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,7 +14,6 @@ import java.util.HashMap;
 
 @Slf4j
 public class Dictionary {
-    private static Dictionary instance = new Dictionary();
     private int currentIndex = 0;
     private HashMap<String, Integer> terms = new HashMap<>();
     private SparseVector indexDocumentFrequency = new SparseVector();
@@ -21,8 +21,7 @@ public class Dictionary {
     private int documents;
     private FileOutputStream termStorage;
 
-    private Dictionary() {
-        String fileName = "dictionary";
+    public Dictionary(String fileName) {
         this.readDictionaryTerms(fileName);
         this.readDictionaryIdf(fileName);
 
@@ -31,10 +30,6 @@ public class Dictionary {
         } catch (IOException e) {
             throw new ApplicationException("The term database could not be opened");
         }
-    }
-
-    public static Dictionary getInstance() {
-        return instance;
     }
 
     private void readDictionaryTerms(String fileName) {

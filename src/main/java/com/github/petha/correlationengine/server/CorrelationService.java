@@ -6,6 +6,8 @@ import com.github.petha.correlationengine.model.Document;
 import com.github.petha.correlationengine.server.dto.AnalyzerDTO;
 import com.github.petha.correlationengine.server.dto.DocumentDTO;
 import com.github.petha.correlationengine.server.dto.MatchDTO;
+import com.github.petha.correlationengine.services.DictionaryService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Service()
-@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Service
+@AllArgsConstructor
 public class CorrelationService {
-    private CorrelationEngine engine = new CorrelationEngine();
+    private CorrelationEngine engine;
+    private DictionaryService dictionaryService;
 
     public UUID indexDocument(DocumentDTO dto) {
         Document document = dto.getDocument();
@@ -39,7 +42,7 @@ public class CorrelationService {
     }
 
     public void registerAnalyzer(AnalyzerDTO analyzerDTO) {
-        engine.addAnalyzer(analyzerDTO.getAnalyzer());
+        engine.addAnalyzer(analyzerDTO.getAnalyzer(this.dictionaryService.getDictionary()));
     }
 
     // TODO: add drop document and update document

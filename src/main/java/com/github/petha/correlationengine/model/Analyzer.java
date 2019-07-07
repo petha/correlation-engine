@@ -18,6 +18,9 @@ public class Analyzer {
     private List<VectorExtractor> extractorList = new ArrayList<>();
 
     @NonNull
+    Dictionary dictionary;
+
+    @NonNull
     private String name;
 
     public synchronized IndexRecord analyze(final Document document) {
@@ -26,7 +29,7 @@ public class Analyzer {
                 .map(ve -> ve.extract(document))
                 .reduce(new SparseVector(), SparseVector::merge);
 
-        Dictionary.getInstance().updateTermFrequency(vector);
+        this.dictionary.updateTermFrequency(vector);
 
         return IndexRecord.builder()
                 .id(document.getId())

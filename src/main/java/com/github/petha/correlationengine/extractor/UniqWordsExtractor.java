@@ -27,7 +27,7 @@ public class UniqWordsExtractor extends VectorExtractor {
     private InputTransformer transformer;
     private Predicate<String> filter;
 
-    public UniqWordsExtractor(String sourceField, InputTransformer transformer, Predicate<String> filter) {
+    public UniqWordsExtractor(String sourceField, InputTransformer transformer, Predicate<String> filter, Dictionary dictionary) {
         super(sourceField);
 
         this.transformer = transformer;
@@ -41,11 +41,11 @@ public class UniqWordsExtractor extends VectorExtractor {
         }
         this.tokenizer = new TokenizerME(model);
         this.snowballStemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.ENGLISH);
-        this.dictionary = Dictionary.getInstance();
+        this.dictionary = dictionary;
     }
 
-    public UniqWordsExtractor(String sourceField) {
-        this(sourceField, new NullTransformer(), ignore -> true);
+    public UniqWordsExtractor(String sourceField, Dictionary dictionary) {
+        this(sourceField, new NullTransformer(), ignore -> true, dictionary);
     }
 
     @SuppressWarnings("squid:S3864")

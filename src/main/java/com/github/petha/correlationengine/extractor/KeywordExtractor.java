@@ -25,7 +25,7 @@ public class KeywordExtractor extends VectorExtractor {
     private SnowballStemmer snowballStemmer;
     private Dictionary dictionary;
 
-    public KeywordExtractor(String sourceField, Set<String> keywords) throws IOException {
+    public KeywordExtractor(String sourceField, Set<String> keywords, Dictionary dictionary) throws IOException {
         super(sourceField);
         InputStream modelStream = getClass().getResourceAsStream("/en-token.bin");
         TokenizerModel model = new TokenizerModel(modelStream);
@@ -37,7 +37,7 @@ public class KeywordExtractor extends VectorExtractor {
                 .map(CharSequence::toString)
                 .collect(Collectors.toSet());
 
-        this.dictionary = Dictionary.getInstance();
+        this.dictionary = dictionary;
     }
 
     @SuppressWarnings("squid:S3864")

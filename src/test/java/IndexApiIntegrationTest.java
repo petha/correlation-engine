@@ -1,4 +1,4 @@
-import com.github.petha.correlationengine.server.SpringBoot;
+import com.github.petha.correlationengine.SpringBoot;
 import com.github.petha.correlationengine.server.api.AnalyzeAPI;
 import com.github.petha.correlationengine.server.api.IndexAPI;
 import com.github.petha.correlationengine.server.dto.AnalyzerDTO;
