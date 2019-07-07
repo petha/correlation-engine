@@ -16,23 +16,25 @@ public class Dictionary {
     private int currentIndex = 0;
     private HashMap<String, Integer> terms = new HashMap<>();
     private SparseVector indexDocumentFrequency = new SparseVector();
-    private HashMap<Integer, Double> precalculatedIdf = new HashMap<>();
+    private HashMap<Integer, Double> preCalculatedIdf = new HashMap<>();
     private int documents;
     private FileOutputStream termStorage;
+    private String filename;
 
-    public Dictionary(String fileName) {
-        this.readDictionaryTerms(fileName);
-        this.readDictionaryIdf(fileName);
+    public Dictionary(String filename) {
+        this.filename = filename;
+        this.readDictionaryTerms();
+        this.readDictionaryIdf();
 
         try {
-            this.termStorage = new FileOutputStream(String.format("%s.terms", fileName), true);
+            this.termStorage = new FileOutputStream(String.format("%s.terms", filename), true);
         } catch (IOException e) {
             throw new ApplicationException("The term database could not be opened");
         }
     }
 
-    private void readDictionaryTerms(String fileName) {
-        try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.terms", fileName))) {
+    private void readDictionaryTerms() {
+        try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.terms", this.filename))) {
             while (true) {
                 Protobufs.Term term = Protobufs.Term.parseDelimitedFrom(fileInputStream);
                 if (term == null) break;
@@ -47,8 +49,8 @@ public class Dictionary {
         }
     }
 
-    private void readDictionaryIdf(String fileName) {
-        try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.idf", fileName))) {
+    private void readDictionaryIdf() {
+        try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.idf", this.filename))) {
             Protobufs.DocumentFrequency documentFrequency = Protobufs.DocumentFrequency.parseFrom(fileInputStream);
             this.documents = documentFrequency.getDocuments();
             this.indexDocumentFrequency = new SparseVector(documentFrequency.getFrequency().getVectorMap());
@@ -60,9 +62,9 @@ public class Dictionary {
         }
     }
 
-    private synchronized void writeIndexDocumentFrequency(String filename) {
+    private synchronized void writeIndexDocumentFrequency() {
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(String.format("%s.idf", filename), false);
+            FileOutputStream fileOutputStream = new FileOutputStream(String.format("%s.idf", this.filename), false);
             Protobufs.DocumentFrequency build = Protobufs.DocumentFrequency.newBuilder()
                     .setDocuments(this.documents)
                     .setFrequency(this.indexDocumentFrequency.getAsProtobuf())
@@ -95,16 +97,16 @@ public class Dictionary {
                         this.indexDocumentFrequency.increment(index, 1));
         this.documents += 1;
         this.resetIdf();
-        this.writeIndexDocumentFrequency("dictionary");
+        this.writeIndexDocumentFrequency();
     }
 
     public synchronized double getIdf(Integer index) {
-        return this.precalculatedIdf
+        return this.preCalculatedIdf
                 .computeIfAbsent(index, idx -> Math.log((double) this.documents / (double) this.indexDocumentFrequency.get(idx)));
     }
 
     private synchronized void resetIdf() {
-        this.precalculatedIdf.clear();
+        this.preCalculatedIdf.clear();
     }
 
     public synchronized Integer getIndex(String term) {

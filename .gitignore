@@ -59,3 +59,12 @@ nb-configuration.xml
 ## OS X
 ##########################
 .DS_Store
+
+##########################
+## Application databases
+##########################
+*.idf
+*.vec
+*.db
+*.terms
+

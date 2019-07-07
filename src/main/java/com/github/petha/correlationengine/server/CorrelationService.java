@@ -40,7 +40,7 @@ public class CorrelationService {
     }
 
     public void registerAnalyzer(AnalyzerDTO analyzerDTO) {
-        engine.addAnalyzer(analyzerDTO.getAnalyzer(this.dictionaryService.getDictionary()));
+        engine.addAnalyzer(analyzerDTO.getAnalyzer(this.dictionaryService.getDictionary(analyzerDTO.getName())));
     }
 
     // TODO: add drop document and update document

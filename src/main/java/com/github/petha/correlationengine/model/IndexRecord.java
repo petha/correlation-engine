@@ -20,19 +20,19 @@ public class IndexRecord {
     @NonNull
     private UUID id;
 
-    public Protobufs.IndexRecord getAsProtobuf() {
-        return Protobufs.IndexRecord.newBuilder()
-                .setId(id.toString())
-                .setVector(vector.getAsProtobuf())
-                .setName(name)
-                .build();
-    }
-
     public static IndexRecord fromProtobuf(Protobufs.IndexRecord indexRecord) {
         return IndexRecord.builder()
                 .id(UUID.fromString(indexRecord.getId()))
                 .name(indexRecord.getName())
                 .vector(new SparseVector(indexRecord.getVector().getVectorMap()))
+                .build();
+    }
+
+    public Protobufs.IndexRecord getAsProtobuf() {
+        return Protobufs.IndexRecord.newBuilder()
+                .setId(id.toString())
+                .setVector(vector.getAsProtobuf())
+                .setName(name)
                 .build();
     }
 }

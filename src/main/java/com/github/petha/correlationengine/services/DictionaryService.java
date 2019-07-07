@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 public class DictionaryService {
     private ConcurrentMap<String, Dictionary> dictionaries = new ConcurrentHashMap<>();
 
-    public Dictionary getDictionary() {
-        return this.dictionaries.computeIfAbsent("dictionary", Dictionary::new);
+    public Dictionary getDictionary(String name) {
+        return this.dictionaries.computeIfAbsent(name, Dictionary::new);
     }
 }

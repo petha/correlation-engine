@@ -21,7 +21,7 @@ public class Test {
     public static void main(String[] args) throws Exception {
         DictionaryService dictionaryService = new DictionaryService();
         CorrelationEngine correlationEngine = new CorrelationEngine(dictionaryService);
-        Dictionary dictionary = dictionaryService.getDictionary();
+        Dictionary dictionary = dictionaryService.getDictionary("UniqWords");
 
         correlationEngine.addAnalyzer(Analyzer.builder()
                 .extractorList(List.of(new UniqWordsExtractor(DESCRIPTION, dictionary)))

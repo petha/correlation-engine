@@ -91,7 +91,7 @@ public class CorrelationEngine {
     }
 
     private synchronized void addIndexRecord(IndexRecord indexRecord) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(indexRecord.getName(), true)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(indexRecord.getName() + ".vec", true)) {
             long position = fileOutputStream.getChannel().position();
             log.info("Indexing document {} ", indexRecord.getId());
             indexRecord.getAsProtobuf().writeDelimitedTo(fileOutputStream);
@@ -102,7 +102,7 @@ public class CorrelationEngine {
     }
 
     public Optional<IndexRecord> getVector(UUID sourceId, String analyzer) {
-        try (FileInputStream fileInputStream = new FileInputStream(analyzer)) {
+        try (FileInputStream fileInputStream = new FileInputStream(analyzer + ".vec")) {
             Long offset = this.index.get(analyzer).get(sourceId);
             if (offset == null) {
                 return Optional.empty();
@@ -129,8 +129,8 @@ public class CorrelationEngine {
     }
 
     public List<Correlation> correlate(IndexRecord source, double cutOff) {
-        Dictionary dictionary = this.dictionaryService.getDictionary();
-        try (FileInputStream fileInputStream = new FileInputStream(source.getName())) {
+        Dictionary dictionary = this.dictionaryService.getDictionary(source.getName());
+        try (FileInputStream fileInputStream = new FileInputStream(source.getName() + ".vec")) {
             return this.getIndex(fileInputStream)
                     .takeWhile(Objects::nonNull)
                     .filter(indexRecord -> !indexRecord.getId().equals(source.getId()))
