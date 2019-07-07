@@ -2,6 +2,7 @@ package com.github.petha.correlationengine.model;
 
 
 import com.github.petha.correlationengine.exceptions.ApplicationException;
+import com.github.petha.correlationengine.services.FilenameService;
 import correlation.protobufs.Protobufs;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,22 +20,25 @@ public class Dictionary {
     private HashMap<Integer, Double> preCalculatedIdf = new HashMap<>();
     private int documents;
     private FileOutputStream termStorage;
-    private String filename;
+    private String name;
+    private FilenameService filenameService;
 
-    public Dictionary(String filename) {
-        this.filename = filename;
+    public Dictionary(String name, FilenameService filenameService) {
+        this.name = name;
+        this.filenameService = filenameService;
+
         this.readDictionaryTerms();
         this.readDictionaryIdf();
 
         try {
-            this.termStorage = new FileOutputStream(String.format("%s.terms", filename), true);
+            this.termStorage = new FileOutputStream(this.filenameService.getDictionaryTerms(this.name), true);
         } catch (IOException e) {
             throw new ApplicationException("The term database could not be opened");
         }
     }
 
     private void readDictionaryTerms() {
-        try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.terms", this.filename))) {
+        try (FileInputStream fileInputStream = new FileInputStream(this.filenameService.getDictionaryTerms(this.name))) {
             while (true) {
                 Protobufs.Term term = Protobufs.Term.parseDelimitedFrom(fileInputStream);
                 if (term == null) break;
@@ -50,7 +54,7 @@ public class Dictionary {
     }
 
     private void readDictionaryIdf() {
-        try (FileInputStream fileInputStream = new FileInputStream(String.format("%s.idf", this.filename))) {
+        try (FileInputStream fileInputStream = new FileInputStream(this.filenameService.getDictionaryIDF(this.name))) {
             Protobufs.DocumentFrequency documentFrequency = Protobufs.DocumentFrequency.parseFrom(fileInputStream);
             this.documents = documentFrequency.getDocuments();
             this.indexDocumentFrequency = new SparseVector(documentFrequency.getFrequency().getVectorMap());
@@ -64,7 +68,7 @@ public class Dictionary {
 
     private synchronized void writeIndexDocumentFrequency() {
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(String.format("%s.idf", this.filename), false);
+            FileOutputStream fileOutputStream = new FileOutputStream(this.filenameService.getDictionaryIDF(this.name), false);
             Protobufs.DocumentFrequency build = Protobufs.DocumentFrequency.newBuilder()
                     .setDocuments(this.documents)
                     .setFrequency(this.indexDocumentFrequency.getAsProtobuf())

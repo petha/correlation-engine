@@ -14,7 +14,6 @@ import java.util.UUID;
 
 @Data
 public class DocumentDTO {
-    @NotBlank
     @NotNull
     private UUID id;
 

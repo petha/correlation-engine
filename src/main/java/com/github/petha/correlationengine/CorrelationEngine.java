@@ -4,6 +4,7 @@ import com.github.petha.correlationengine.exceptions.ApplicationException;
 import com.github.petha.correlationengine.model.Dictionary;
 import com.github.petha.correlationengine.model.*;
 import com.github.petha.correlationengine.services.DictionaryService;
+import com.github.petha.correlationengine.services.FilenameService;
 import correlation.protobufs.Protobufs;
 import lombok.extern.slf4j.Slf4j;
 import org.mapdb.DB;
@@ -24,14 +25,18 @@ import java.util.stream.Stream;
 @Service
 public class CorrelationEngine {
     private DictionaryService dictionaryService;
+    private FilenameService filenameService;
 
     private List<Analyzer> analyzerList = new ArrayList<>();
     private HTreeMap<String, byte[]> analyzers;
     private Map<String, ConcurrentMap<UUID, Long>> index = new HashMap<>();
     private DB db;
 
-    public CorrelationEngine(DictionaryService dictionaryService) {
-        this.db = DBMaker.fileDB("data.db")
+    public CorrelationEngine(DictionaryService dictionaryService, FilenameService filenameService) {
+        this.dictionaryService = dictionaryService;
+        this.filenameService = filenameService;
+
+        this.db = DBMaker.fileDB(this.filenameService.getDatabase())
                 .fileMmapEnable()
                 .transactionEnable()
                 .make();
@@ -44,7 +49,6 @@ public class CorrelationEngine {
         this.analyzers.keySet().forEach(name -> this.index.put(name, this.db
                 .hashMap(name, Serializer.UUID, Serializer.LONG)
                 .createOrOpen()));
-        this.dictionaryService = dictionaryService;
     }
 
     public Stream<IndexRecord> getIndex(FileInputStream fileInput) {
@@ -91,9 +95,10 @@ public class CorrelationEngine {
     }
 
     private synchronized void addIndexRecord(IndexRecord indexRecord) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(indexRecord.getName() + ".vec", true)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(
+                this.filenameService.getVectorFile(indexRecord.getName()), true)) {
             long position = fileOutputStream.getChannel().position();
-            log.info("Indexing document {} ", indexRecord.getId());
+            log.info("Persisting vector for document {} from analyzer", indexRecord.getId(), indexRecord.getName());
             indexRecord.getAsProtobuf().writeDelimitedTo(fileOutputStream);
             this.index.get(indexRecord.getName()).put(indexRecord.getId(), position);
         } catch (IOException e) {
@@ -102,7 +107,7 @@ public class CorrelationEngine {
     }
 
     public Optional<IndexRecord> getVector(UUID sourceId, String analyzer) {
-        try (FileInputStream fileInputStream = new FileInputStream(analyzer + ".vec")) {
+        try (FileInputStream fileInputStream = new FileInputStream(this.filenameService.getVectorFile(analyzer))) {
             Long offset = this.index.get(analyzer).get(sourceId);
             if (offset == null) {
                 return Optional.empty();
@@ -130,7 +135,7 @@ public class CorrelationEngine {
 
     public List<Correlation> correlate(IndexRecord source, double cutOff) {
         Dictionary dictionary = this.dictionaryService.getDictionary(source.getName());
-        try (FileInputStream fileInputStream = new FileInputStream(source.getName() + ".vec")) {
+        try (FileInputStream fileInputStream = new FileInputStream(this.filenameService.getVectorFile(source.getName()))) {
             return this.getIndex(fileInputStream)
                     .takeWhile(Objects::nonNull)
                     .filter(indexRecord -> !indexRecord.getId().equals(source.getId()))
