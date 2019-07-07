@@ -1,11 +1,10 @@
 package com.github.petha.correlationengine.server.dto;
 
-import com.github.petha.correlationengine.model.Document;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.petha.correlationengine.model.Document;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;

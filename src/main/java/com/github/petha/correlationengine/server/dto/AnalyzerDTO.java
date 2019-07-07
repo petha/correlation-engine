@@ -19,7 +19,7 @@ public class AnalyzerDTO {
     private List<ExtractorDTO> extractors;
 
     @NotBlank
-    @Pattern(regexp="^[a-zA-Z0-9]{1,10}$",message="length must be between 1 and 10 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9]{1,10}$")
     private String name;
 
 

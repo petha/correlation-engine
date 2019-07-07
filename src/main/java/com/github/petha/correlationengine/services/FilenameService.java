@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Paths;
 
 @Service
-//@AllArgsConstructor
 public class FilenameService {
+    private static final String INVALID_PATH = "Invalid path";
+
     @Value("${correlation.database.path}")
     private String basePath;
 
@@ -18,7 +19,7 @@ public class FilenameService {
             return Paths.get(this.basePath, analyzer, "document.vec")
                     .toString();
         }
-        throw new ApplicationException("Invalid path");
+        throw new ApplicationException(INVALID_PATH);
     }
 
 
@@ -45,10 +46,7 @@ public class FilenameService {
     }
 
     private boolean checkFilenameCorrect(String analyzer) {
-        if (!analyzer.matches("^[a-zA-Z0-9]+$")) {
-            throw new ApplicationException("Invalid path");
-        }
-        return true;
+        return analyzer.matches("^[a-zA-Z0-9]+$");
     }
 
     private void ensureDirectory(String analyzer) {
