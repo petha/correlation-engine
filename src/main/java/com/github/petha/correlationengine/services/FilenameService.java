@@ -29,7 +29,7 @@ public class FilenameService {
             return Paths.get(this.basePath, analyzer, "dictionary.dic")
                     .toString();
         }
-        throw new ApplicationException("Invalid path");
+        throw new ApplicationException(INVALID_PATH);
     }
 
     public String getDictionaryIDF(String analyzer) {
