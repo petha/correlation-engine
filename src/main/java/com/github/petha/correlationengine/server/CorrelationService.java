@@ -1,15 +1,13 @@
 package com.github.petha.correlationengine.server;
 
-import com.github.petha.correlationengine.model.Analyzer;
 import com.github.petha.correlationengine.CorrelationEngine;
+import com.github.petha.correlationengine.model.Analyzer;
 import com.github.petha.correlationengine.model.Document;
 import com.github.petha.correlationengine.server.dto.AnalyzerDTO;
 import com.github.petha.correlationengine.server.dto.DocumentDTO;
 import com.github.petha.correlationengine.server.dto.MatchDTO;
 import com.github.petha.correlationengine.services.DictionaryService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

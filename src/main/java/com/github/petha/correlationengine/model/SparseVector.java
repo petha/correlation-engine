@@ -3,12 +3,11 @@ package com.github.petha.correlationengine.model;
 import com.google.common.collect.Sets;
 import correlation.protobufs.Protobufs;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 @NoArgsConstructor
 public class SparseVector {
     // Term Index -> Frequency

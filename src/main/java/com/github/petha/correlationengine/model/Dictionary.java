@@ -4,7 +4,6 @@ package com.github.petha.correlationengine.model;
 import com.github.petha.correlationengine.exceptions.ApplicationException;
 import correlation.protobufs.Protobufs;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
