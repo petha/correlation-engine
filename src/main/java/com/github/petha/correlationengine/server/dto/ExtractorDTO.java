@@ -5,12 +5,16 @@ import com.github.petha.correlationengine.extractor.UniqWordsExtractor;
 import com.github.petha.correlationengine.extractor.VectorExtractor;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Map;
 
 @Data
 public class ExtractorDTO {
+    @NotBlank
     private String name;
+    @NotBlank
     private String sourceField;
+
     private Map<String, String> properties;
 
 
