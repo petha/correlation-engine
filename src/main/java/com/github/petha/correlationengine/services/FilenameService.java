@@ -1,5 +1,6 @@
 package com.github.petha.correlationengine.services;
 
+import com.github.petha.correlationengine.exceptions.ApplicationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +37,12 @@ public class FilenameService {
     }
 
     private void ensureDirectory(String analyzer) {
+
         Paths.get(this.basePath).toFile().mkdirs();
         if (analyzer != null) {
+            if (!analyzer.matches("^[a-zA-Z0-9]{1,10}$")) {
+                throw new ApplicationException("Invalid path");
+            }
             Paths.get(this.basePath, analyzer).toFile().mkdirs();
         }
     }

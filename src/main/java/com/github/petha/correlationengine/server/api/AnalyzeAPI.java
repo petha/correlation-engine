@@ -5,6 +5,7 @@ import com.github.petha.correlationengine.server.dto.AnalyzerDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,7 @@ public class AnalyzeAPI {
     }
 
     @PostMapping
-    public void createAnalyzer(@RequestBody AnalyzerDTO analyzer) {
+    public void createAnalyzer(@Valid @RequestBody AnalyzerDTO analyzer) {
         this.service.registerAnalyzer(analyzer);
     }
 }

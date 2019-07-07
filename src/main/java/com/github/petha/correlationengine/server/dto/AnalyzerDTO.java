@@ -8,6 +8,7 @@ import lombok.Data;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,9 @@ public class AnalyzerDTO {
     @NotNull
     @Valid
     private List<ExtractorDTO> extractors;
+
     @NotBlank
+    @Pattern(regexp="^[a-zA-Z0-9]{1,10}$",message="length must be between 1 and 10 characters")
     private String name;
 
 
