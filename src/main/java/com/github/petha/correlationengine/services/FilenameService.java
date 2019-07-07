@@ -14,14 +14,21 @@ public class FilenameService {
 
     public String getVectorFile(String analyzer) {
         this.ensureDirectory(analyzer);
-        return Paths.get(this.basePath, analyzer, "document.vec")
-                .toString();
+        if (this.checkFilenameCorrect(analyzer)) {
+            return Paths.get(this.basePath, analyzer, "document.vec")
+                    .toString();
+        }
+        throw new ApplicationException("Invalid path");
     }
+
 
     public String getDictionaryTerms(String analyzer) {
         this.ensureDirectory(analyzer);
-        return Paths.get(this.basePath, analyzer, "dictionary.dic")
-                .toString();
+        if (this.checkFilenameCorrect(analyzer)) {
+            return Paths.get(this.basePath, analyzer, "dictionary.dic")
+                    .toString();
+        }
+        throw new ApplicationException("Invalid path");
     }
 
     public String getDictionaryIDF(String analyzer) {
@@ -34,17 +41,22 @@ public class FilenameService {
         this.ensureDirectory(null);
         return Paths.get(this.basePath, "main.db")
                 .toString();
+
+    }
+
+    private boolean checkFilenameCorrect(String analyzer) {
+        if (!analyzer.matches("^[a-zA-Z0-9]+$")) {
+            throw new ApplicationException("Invalid path");
+        }
+        return true;
     }
 
     private void ensureDirectory(String analyzer) {
         Paths.get(this.basePath).toFile().mkdirs();
 
-        if (analyzer != null) {
-            if (!analyzer.matches("[a-zA-Z0-9]++")) {
-                throw new ApplicationException("Invalid path");
-            } else {
-                Paths.get(this.basePath, analyzer).toFile().mkdirs();
-            }
+        if (analyzer != null && checkFilenameCorrect(analyzer)) {
+            Paths.get(this.basePath, analyzer).toFile().mkdirs();
         }
     }
 }
+
