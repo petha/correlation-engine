@@ -40,10 +40,10 @@ public class FilenameService {
         Paths.get(this.basePath).toFile().mkdirs();
 
         if (analyzer != null) {
-            if (analyzer.matches("^[a-zA-Z0-9]{1,10}$")) {
-                Paths.get(this.basePath, analyzer).toFile().mkdirs();
-            } else {
+            if (!analyzer.matches("[a-zA-Z0-9]++")) {
                 throw new ApplicationException("Invalid path");
+            } else {
+                Paths.get(this.basePath, analyzer).toFile().mkdirs();
             }
         }
     }
