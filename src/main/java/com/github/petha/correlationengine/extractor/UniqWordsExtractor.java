@@ -67,9 +67,4 @@ public class UniqWordsExtractor extends VectorExtractor {
                         sparseVector.increment(this.dictionary.getIndex(term), Math.toIntExact(frequency)));
         return sparseVector;
     }
-
-    @Override
-    public void printStatistics() {
-        log.info("UniqWordsExtractor: Dict: {}", this.dictionary);
-    }
 }

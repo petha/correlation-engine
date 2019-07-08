@@ -37,8 +37,4 @@ public class Analyzer {
                 .vector(vector)
                 .build();
     }
-
-    public void printStatistics() {
-        extractorList.forEach(VectorExtractor::printStatistics);
-    }
 }

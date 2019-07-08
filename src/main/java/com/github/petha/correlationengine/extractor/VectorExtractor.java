@@ -16,6 +16,4 @@ public abstract class VectorExtractor {
 
     public abstract SparseVector extract(Document document);
 
-    public void printStatistics() {
-    }
 }

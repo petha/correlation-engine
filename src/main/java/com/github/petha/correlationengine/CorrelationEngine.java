@@ -90,9 +90,6 @@ public class CorrelationEngine {
                 .forEach(this::addIndexRecord);
     }
 
-    public void printStatistics() {
-        this.analyzerList.forEach(Analyzer::printStatistics);
-    }
 
     private synchronized void addIndexRecord(IndexRecord indexRecord) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(
@@ -158,10 +155,5 @@ public class CorrelationEngine {
                 .targetId(target.getId())
                 .score(source.getVector().cosineSimilarity(target.getVector(), dictionary))
                 .build();
-    }
-
-    public void shutdown() {
-        this.db.commit();
-        this.db.close();
     }
 }
