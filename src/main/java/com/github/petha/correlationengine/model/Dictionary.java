@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 @Slf4j
-public class Dictionary {
+public class Dictionary implements IdfContainer {
     private int currentIndex = 0;
     private HashMap<String, Integer> terms = new HashMap<>();
     private SparseVector indexDocumentFrequency = new SparseVector();
@@ -95,6 +95,7 @@ public class Dictionary {
         }
     }
 
+    @Override
     public synchronized void updateTermFrequency(SparseVector vector) {
         vector.getSetTerms()
                 .forEach(index ->
@@ -104,6 +105,7 @@ public class Dictionary {
         this.writeIndexDocumentFrequency();
     }
 
+    @Override
     public synchronized double getIdf(Integer index) {
         return this.preCalculatedIdf
                 .computeIfAbsent(index, idx -> Math.log((double) this.documents / (double) this.indexDocumentFrequency.get(idx)));

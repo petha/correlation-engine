@@ -31,7 +31,11 @@ public class SparseVector {
         }
     }
 
-    private double norm(Dictionary dictionary) {
+    public Set<Integer> getNoZeroElements() {
+        return this.values.keySet();
+    }
+
+    public double norm(IdfContainer dictionary) {
         return this.values.entrySet().stream()
                 .map(entry -> entry.getValue() * dictionary.getIdf(entry.getKey()))
                 .reduce(0.0, (acc, val) -> acc + Math.pow(val, 2));
@@ -40,15 +44,6 @@ public class SparseVector {
     public SparseVector merge(SparseVector that) {
         that.values.forEach(this::increment);
         return this;
-    }
-
-    public double cosineSimilarity(SparseVector that, Dictionary dictionary) {
-        Sets.SetView<Integer> intersection = Sets.intersection(this.values.keySet(), that.values.keySet());
-        double dotProduct = intersection.stream()
-                .map(index -> this.values.get(index) * that.values.get(index) * Math.pow(dictionary.getIdf(index), 2))
-                .reduce(0.0, Double::sum);
-
-        return dotProduct / (Math.sqrt(this.norm(dictionary)) * Math.sqrt(that.norm(dictionary)));
     }
 
     public Protobufs.SparseVector getAsProtobuf() {

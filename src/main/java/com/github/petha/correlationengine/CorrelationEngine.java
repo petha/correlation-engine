@@ -1,6 +1,7 @@
 package com.github.petha.correlationengine;
 
 import com.github.petha.correlationengine.exceptions.ApplicationException;
+import com.github.petha.correlationengine.math.CosineSimilarity;
 import com.github.petha.correlationengine.model.Dictionary;
 import com.github.petha.correlationengine.model.*;
 import com.github.petha.correlationengine.services.DictionaryService;
@@ -153,7 +154,7 @@ public class CorrelationEngine {
         return Correlation.builder()
                 .sourceId(source.getId())
                 .targetId(target.getId())
-                .score(source.getVector().cosineSimilarity(target.getVector(), dictionary))
+                .score(CosineSimilarity.score(source.getVector(), target.getVector(), dictionary))
                 .build();
     }
 }
