@@ -25,10 +25,6 @@ public class SparseVector {
         return this.values.keySet();
     }
 
-    public void put(int index, int value) {
-        this.values.put(index, value);
-    }
-
     public void increment(int index, int value) {
         if (value > 0) {
             this.values.compute(index, (key, previousValue) -> previousValue == null ? value : value + previousValue);
@@ -59,10 +55,5 @@ public class SparseVector {
         return Protobufs.SparseVector.newBuilder()
                 .putAllVector(values)
                 .build();
-    }
-
-    @Override
-    public String toString() {
-        return values.toString();
     }
 }
