@@ -1,6 +1,7 @@
 package com.github.petha.correlationengine.server;
 
 import com.github.petha.correlationengine.CorrelationEngine;
+import com.github.petha.correlationengine.exceptions.ApplicationException;
 import com.github.petha.correlationengine.model.Analyzer;
 import com.github.petha.correlationengine.model.Document;
 import com.github.petha.correlationengine.server.dto.AnalyzerDTO;
@@ -23,24 +24,30 @@ public class CorrelationService {
 
     public UUID indexDocument(DocumentDTO dto) {
         Document document = dto.getDocument();
-        engine.analyze(document);
+        this.engine.analyze(document);
         return document.getId();
     }
 
     public Stream<MatchDTO> findMatches(UUID id, String analyze, double cutOff) {
-        return engine.correlate(id, analyze, cutOff).stream()
-                .limit(40)
-                .map(MatchDTO::fromCorrelation);
+        return this.engine.getAnalyzers().stream()
+                .filter(analyzer -> analyzer.getName().equals(analyze))
+                .findFirst()
+                .map(analyzer -> this.engine.correlate(id, analyzer.getName(), cutOff).stream()
+                        .limit(40)
+                        .map(MatchDTO::fromCorrelation))
+                .orElseThrow(() -> new ApplicationException("Analyzer does not exist"));
     }
 
     public List<String> getAnalyzers() {
-        return engine.getAnalyzers().stream()
+        return this.engine.getAnalyzers().stream()
                 .map(Analyzer::getName)
                 .collect(Collectors.toList());
     }
 
     public void registerAnalyzer(AnalyzerDTO analyzerDTO) {
-        engine.addAnalyzer(analyzerDTO.getAnalyzer(this.dictionaryService.getDictionary(analyzerDTO.getName())));
+        this.engine
+                .addAnalyzer(
+                        analyzerDTO.getAnalyzer(this.dictionaryService.getDictionary(analyzerDTO.getName())));
     }
 
     // TODO: add drop document and update document
