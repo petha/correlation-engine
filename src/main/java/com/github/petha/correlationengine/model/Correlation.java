@@ -10,5 +10,5 @@ import java.util.UUID;
 public class Correlation {
     private UUID sourceId;
     private UUID targetId;
-    private double score;
+    private float score;
 }

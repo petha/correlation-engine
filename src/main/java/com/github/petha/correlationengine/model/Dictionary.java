@@ -17,7 +17,7 @@ public class Dictionary implements IdfContainer {
     private int currentIndex = 0;
     private HashMap<String, Integer> terms = new HashMap<>();
     private SparseVector indexDocumentFrequency = new SparseVector();
-    private HashMap<Integer, Double> preCalculatedIdf = new HashMap<>();
+    private HashMap<Integer, Float> preCalculatedIdf = new HashMap<>();
     private int documents;
     private FileOutputStream termStorage;
     private String name;
@@ -106,9 +106,9 @@ public class Dictionary implements IdfContainer {
     }
 
     @Override
-    public synchronized double getIdf(Integer index) {
+    public synchronized float getIdf(Integer index) {
         return this.preCalculatedIdf
-                .computeIfAbsent(index, idx -> Math.log((double) this.documents / (double) this.indexDocumentFrequency.get(idx)));
+                .computeIfAbsent(index, idx -> (float) Math.log(this.documents / this.indexDocumentFrequency.get(idx)));
     }
 
     private synchronized void resetIdf() {

@@ -1,54 +1,83 @@
 package com.github.petha.correlationengine.model;
 
-import com.google.common.collect.Sets;
 import correlation.protobufs.Protobufs;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @NoArgsConstructor
 public class SparseVector {
     // Term Index -> Frequency
-    private HashMap<Integer, Integer> values = new HashMap<>();
+    private SortedList sortedList = new SortedList();
+    private List<Integer> values = new ArrayList<>();
 
     public SparseVector(Map<Integer, Integer> vector) {
-        this.values = new HashMap<>(vector);
+        vector.forEach(this::increment);
     }
 
-    public Integer get(int index) {
-        return this.values.get(index);
+    public int get(int index) {
+        int contains = this.sortedList.contains(index);
+        if (contains >= 0) {
+            return this.values.get(contains);
+        }
+        return 0;
     }
 
     public Set<Integer> getSetTerms() {
-        return this.values.keySet();
+        return this.sortedList.asSet();
     }
 
     public void increment(int index, int value) {
         if (value > 0) {
-            this.values.compute(index, (key, previousValue) -> previousValue == null ? value : value + previousValue);
+            int contains = this.sortedList.contains(index);
+            if (contains >= 0) {
+                Integer integer = this.values.get(contains);
+                this.values.set(contains, integer + value);
+            } else {
+                int insert = this.sortedList.insert(index);
+                this.values.add(insert, value);
+            }
         }
     }
 
-    public Set<Integer> getNoZeroElements() {
-        return this.values.keySet();
+    public int[] getDense(int dimension) {
+        int[] dense = new int[dimension];
+        List<Integer> list = this.sortedList.getList();
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            int index = list.get(i);
+            Integer value = this.values.get(i);
+            dense[index] = value;
+        }
+        return dense;
     }
 
-    public double norm(IdfContainer dictionary) {
-        return this.values.entrySet().stream()
-                .map(entry -> entry.getValue() * dictionary.getIdf(entry.getKey()))
-                .reduce(0.0, (acc, val) -> acc + Math.pow(val, 2));
+    public float norm(IdfContainer dictionary) {
+        return this.values.stream()
+                .map(Integer::floatValue)
+                .reduce(0.0f, (acc, val) -> acc + (float) Math.pow(val, 2));
     }
 
     public SparseVector merge(SparseVector that) {
-        that.values.forEach(this::increment);
+        int size = that.sortedList.size();
+        for (int i = 0; i < size; i++) {
+            int i1 = that.sortedList.get(i);
+            this.increment(i1, that.values.get(i));
+        }
         return this;
     }
 
     public Protobufs.SparseVector getAsProtobuf() {
+        HashMap<Integer, Integer> integerIntegerHashMap = new HashMap<>();
+        int size = this.sortedList.size();
+        for (int i = 0; i < size; i++) {
+            int index = this.sortedList.get(i);
+            Integer value = this.values.get(i);
+            integerIntegerHashMap.put(index, value);
+        }
+
         return Protobufs.SparseVector.newBuilder()
-                .putAllVector(values)
+                .putAllVector(integerIntegerHashMap)
                 .build();
     }
 }
