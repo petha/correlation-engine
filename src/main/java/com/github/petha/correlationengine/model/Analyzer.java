@@ -33,7 +33,6 @@ public class Analyzer {
 
         return IndexRecord.builder()
                 .id(document.getId())
-                .name(this.getName())
                 .vector(vector)
                 .build();
     }

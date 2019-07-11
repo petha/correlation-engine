@@ -3,7 +3,10 @@ package com.github.petha.correlationengine.model;
 import correlation.protobufs.Protobufs;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 public class SparseVector {
@@ -11,8 +14,9 @@ public class SparseVector {
     private SortedList sortedList = new SortedList();
     private List<Integer> values = new ArrayList<>();
 
-    public SparseVector(Map<Integer, Integer> vector) {
-        vector.forEach(this::increment);
+    public SparseVector(List<Integer> pos, List<Integer> val) {
+        this.sortedList.getList().addAll(pos);
+        this.values.addAll(val);
     }
 
     public int get(int index) {
@@ -40,6 +44,22 @@ public class SparseVector {
         }
     }
 
+    public int[] getPos() {
+        int[] pos = new int[this.sortedList.size()];
+        for (int i = 0; i < pos.length; i++) {
+            pos[i] = this.sortedList.get(i);
+        }
+        return pos;
+    }
+
+    public int[] getVal() {
+        int[] val = new int[this.values.size()];
+        for (int i = 0; i < val.length; i++) {
+            val[i] = this.values.get(i);
+        }
+        return val;
+    }
+
     public int[] getDense(int dimension) {
         int[] dense = new int[dimension];
         List<Integer> list = this.sortedList.getList();
@@ -50,12 +70,6 @@ public class SparseVector {
             dense[index] = value;
         }
         return dense;
-    }
-
-    public float norm(IdfContainer dictionary) {
-        return this.values.stream()
-                .map(Integer::floatValue)
-                .reduce(0.0f, (acc, val) -> acc + (float) Math.pow(val, 2));
     }
 
     public SparseVector merge(SparseVector that) {
@@ -77,7 +91,8 @@ public class SparseVector {
         }
 
         return Protobufs.SparseVector.newBuilder()
-                .putAllVector(integerIntegerHashMap)
+                .addAllPos(this.sortedList.getList())
+                .addAllVal(this.values)
                 .build();
     }
 }

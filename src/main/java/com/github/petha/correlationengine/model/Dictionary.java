@@ -57,7 +57,7 @@ public class Dictionary implements IdfContainer {
         try (FileInputStream fileInputStream = new FileInputStream(this.filenameService.getDictionaryIDF(this.name))) {
             Protobufs.DocumentFrequency documentFrequency = Protobufs.DocumentFrequency.parseFrom(fileInputStream);
             this.documents = documentFrequency.getDocuments();
-            this.indexDocumentFrequency = new SparseVector(documentFrequency.getFrequency().getVectorMap());
+            this.indexDocumentFrequency = new SparseVector(documentFrequency.getFrequency().getPosList(), documentFrequency.getFrequency().getValList());
             log.info("IDF read. Terms {}, Indexed documents: {}", this.indexDocumentFrequency.getSetTerms().size(), this.documents);
         } catch (FileNotFoundException e) {
             log.info("The document frequency was not found");
