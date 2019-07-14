@@ -21,9 +21,3 @@ message SparseVector {
   repeated int32 pos = 1;
   repeated int32 val = 2;
 }
-
-message IndexRecord {
-  string id = 1;
-  string name = 4;
-  SparseVector vector = 5;
-}

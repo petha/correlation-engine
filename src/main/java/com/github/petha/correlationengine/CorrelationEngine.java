@@ -2,11 +2,9 @@ package com.github.petha.correlationengine;
 
 import com.github.petha.correlationengine.exceptions.ApplicationException;
 import com.github.petha.correlationengine.math.CosineSimilarity;
-import com.github.petha.correlationengine.model.Dictionary;
 import com.github.petha.correlationengine.model.*;
 import com.github.petha.correlationengine.services.DictionaryService;
 import com.github.petha.correlationengine.services.FilenameService;
-import correlation.protobufs.Protobufs;
 import lombok.extern.slf4j.Slf4j;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -14,14 +12,15 @@ import org.mapdb.HTreeMap;
 import org.mapdb.Serializer;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.nio.file.StandardOpenOption.READ;
 
 @Slf4j
 @Service
@@ -53,22 +52,6 @@ public class CorrelationEngine {
                 .createOrOpen()));
     }
 
-    public Stream<IndexRecord> getIndex(BufferedInputStream fileInput) {
-        return Stream.generate(() -> {
-            try {
-                Protobufs.IndexRecord indexRecord = Protobufs.IndexRecord.parseDelimitedFrom(fileInput);
-                if (indexRecord == null) return null;
-                return IndexRecord.fromProtobuf(indexRecord);
-            } catch (IOException e) {
-                return null;
-            }
-        });
-    }
-
-    public Set<String> getIndexNames() {
-        return Collections.unmodifiableSet(this.analyzers.getKeys());
-    }
-
     public void addAnalyzer(Analyzer analyzer) {
 
         boolean analyzerExists = this.analyzerList.stream().anyMatch(existingAnalyzer ->
@@ -95,33 +78,30 @@ public class CorrelationEngine {
                 });
     }
 
-
     private synchronized void addIndexRecord(IndexRecord indexRecord, String analyzer) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(
                 this.filenameService.getVectorFile(analyzer), true)) {
             long position = fileOutputStream.getChannel().position();
             log.info("Persisting vector for document {} from analyzer", indexRecord.getId(), analyzer);
-            indexRecord.getAsProtobuf().writeDelimitedTo(fileOutputStream);
+            indexRecord.writeToDisc(fileOutputStream);
             this.index.get(analyzer).put(indexRecord.getId(), position);
         } catch (IOException e) {
             log.info("Exception thrown", e);
         }
     }
 
-    public Optional<IndexRecord> getVector(UUID sourceId, String analyzer) {
-        try (FileInputStream fileInputStream = new FileInputStream(this.filenameService.getVectorFile(analyzer))) {
+    public int[][] getVector2(UUID sourceId, String analyzer) {
+        try (InputStream fileInputStream = new BufferedInputStream(new FileInputStream(this.filenameService.getVectorFile(analyzer)))) {
             Long offset = this.index.get(analyzer).get(sourceId);
             if (offset == null) {
-                return Optional.empty();
+                throw new ApplicationException("No vector found");
             }
 
             while (offset > 0) {
                 offset -= fileInputStream.skip(offset);
             }
 
-            Protobufs.IndexRecord indexRecord = Protobufs.IndexRecord.parseDelimitedFrom(fileInputStream);
-            if (indexRecord == null) return Optional.empty();
-            return Optional.of(IndexRecord.fromProtobuf(indexRecord));
+            return DiskIndexRecordParser.readOneFromStream(fileInputStream);
 
         } catch (IOException e) {
             log.info("Get vector exception", e);
@@ -129,36 +109,40 @@ public class CorrelationEngine {
         }
     }
 
-    public List<Correlation> correlate(UUID sourceId, String analyzer, double cutOff) {
-        return this.getVector(sourceId, analyzer)
-                .map(v -> this.correlate(v, analyzer, cutOff))
-                .orElseThrow(() -> new ApplicationException("Record not found"));
-    }
+    public List<Correlation> correlateV2(UUID sourceId, String analyzer, float cutOff) {
+        int[][] source = getVector2(sourceId, analyzer);
+        List<Correlation> correlations = new ArrayList<>();
 
-    public List<Correlation> correlate(IndexRecord source, String analyzer, double cutOff) {
-        Dictionary dictionary = this.dictionaryService.getDictionary(analyzer);
-        try (FileInputStream fileInputStream = new FileInputStream(this.filenameService.getVectorFile(analyzer))) {
-            return this.getIndex(new BufferedInputStream(fileInputStream, 100*1024))
-                    .takeWhile(Objects::nonNull)
-                    .filter(indexRecord -> !indexRecord.getId().equals(source.getId()))
-                    .map(target -> this.correlate(source, target, dictionary))
-                    .filter(correlation -> correlation.getScore() > cutOff)
-                    .sorted(Comparator.comparingDouble(Correlation::getScore).reversed())
-                    .collect(Collectors.toList());
+        ByteBuffer buffer = ByteBuffer.allocateDirect(10 * 1024 * 1024);
+        Path path = Paths.get(this.filenameService.getVectorFile(analyzer));
+        DiskIndexRecordParser diskIndexRecordParser = new DiskIndexRecordParser();
+
+        try (FileChannel fc = FileChannel.open(path, READ)) {
+            while (fc.read(buffer) > 0) {
+                buffer.flip();
+                diskIndexRecordParser.parse(buffer, (targetValues, id) -> {
+                    float score = CosineSimilarity.score(source[0], source[1], targetValues[0], targetValues[1]);
+                    if (score >= cutOff) {
+                        correlations.add(Correlation.builder()
+                                .score(score)
+                                .sourceId(sourceId)
+                                .targetId(id).build());
+                    }
+                });
+
+                buffer.compact();
+            }
         } catch (IOException e) {
-            throw new ApplicationException("Could not read the stream");
+            log.info("Exception reading the file storage for vectors", e);
+            throw new ApplicationException("Could not read the vector file");
         }
+
+
+        correlations.sort(Comparator.comparingDouble(Correlation::getScore).reversed());
+        return correlations;
     }
 
     public List<Analyzer> getAnalyzers() {
         return Collections.unmodifiableList(this.analyzerList);
-    }
-
-    private Correlation correlate(IndexRecord source, IndexRecord target, Dictionary dictionary) {
-        return Correlation.builder()
-                .sourceId(source.getId())
-                .targetId(target.getId())
-                .score(CosineSimilarity.score(source.getVector().getPos(), source.getVector().getVal(), target.getVector().getPos(), target.getVector().getVal()))
-                .build();
     }
 }

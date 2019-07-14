@@ -29,6 +29,6 @@ public class IndexAPI {
 
     @GetMapping("/correlate/{analyze}/{id}")
     public Stream<MatchDTO> getMatching(@PathVariable("analyze") @Pattern(regexp = "^[a-zA-Z0-9]{1,10}$") String analyze, @PathVariable UUID id) {
-        return service.findMatches(id, analyze, 0.5);
+        return service.findMatches(id, analyze, 0.5f);
     }
 }

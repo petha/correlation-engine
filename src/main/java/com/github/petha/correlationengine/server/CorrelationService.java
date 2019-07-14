@@ -28,11 +28,11 @@ public class CorrelationService {
         return document.getId();
     }
 
-    public Stream<MatchDTO> findMatches(UUID id, String analyze, double cutOff) {
+    public Stream<MatchDTO> findMatches(UUID id, String analyze, float cutOff) {
         return this.engine.getAnalyzers().stream()
                 .filter(analyzer -> analyzer.getName().equals(analyze))
                 .findFirst()
-                .map(analyzer -> this.engine.correlate(id, analyzer.getName(), cutOff).stream()
+                .map(analyzer -> this.engine.correlateV2(id, analyzer.getName(), cutOff).stream()
                         .limit(40)
                         .map(MatchDTO::fromCorrelation))
                 .orElseThrow(() -> new ApplicationException("Analyzer does not exist"));

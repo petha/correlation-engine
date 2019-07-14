@@ -1,11 +1,14 @@
 package com.github.petha.correlationengine.model;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+@EqualsAndHashCode
 public class SortedList {
     List<Integer> list = new ArrayList<>();
 

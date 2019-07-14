@@ -44,7 +44,7 @@ public class IndexApiIntegrationTest {
         document1.setId(UUID.randomUUID());
 
         DocumentDTO document2 = new DocumentDTO();
-        document2.getFields().put("description", "the text of which none should match");
+        document2.getFields().put("description", "none should match");
         document2.setId(UUID.randomUUID());
 
         DocumentDTO document3 = new DocumentDTO();

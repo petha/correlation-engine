@@ -1,14 +1,13 @@
 package com.github.petha.correlationengine.model;
 
 import correlation.protobufs.Protobufs;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @NoArgsConstructor
+@EqualsAndHashCode
 public class SparseVector {
     // Term Index -> Frequency
     private SortedList sortedList = new SortedList();
@@ -17,6 +16,17 @@ public class SparseVector {
     public SparseVector(List<Integer> pos, List<Integer> val) {
         this.sortedList.getList().addAll(pos);
         this.values.addAll(val);
+    }
+
+    public SparseVector(int[][] data) {
+        for (int i : data[0]) {
+            this.sortedList.getList().add(i);
+        }
+
+        for (int i : data[1]) {
+            this.values.add(i);
+        }
+
     }
 
     public int get(int index) {
@@ -58,18 +68,6 @@ public class SparseVector {
             val[i] = this.values.get(i);
         }
         return val;
-    }
-
-    public int[] getDense(int dimension) {
-        int[] dense = new int[dimension];
-        List<Integer> list = this.sortedList.getList();
-        int size = list.size();
-        for (int i = 0; i < size; i++) {
-            int index = list.get(i);
-            Integer value = this.values.get(i);
-            dense[index] = value;
-        }
-        return dense;
     }
 
     public SparseVector merge(SparseVector that) {

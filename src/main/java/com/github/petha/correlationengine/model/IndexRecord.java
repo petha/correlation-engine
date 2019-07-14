@@ -1,15 +1,19 @@
 package com.github.petha.correlationengine.model;
 
-import correlation.protobufs.Protobufs;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.UUID;
 
 @Slf4j
 @Data
+@EqualsAndHashCode
 @Builder
 public class IndexRecord {
 
@@ -19,17 +23,21 @@ public class IndexRecord {
     @NonNull
     private UUID id;
 
-    public static IndexRecord fromProtobuf(Protobufs.IndexRecord indexRecord) {
-        return IndexRecord.builder()
-                .id(UUID.fromString(indexRecord.getId()))
-                .vector(new SparseVector(indexRecord.getVector().getPosList(), indexRecord.getVector().getValList()))
-                .build();
+    public void writeToDisc(OutputStream outputStream) throws IOException {
+        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+        dataOutputStream.writeInt(vector.getPos().length);
+        dataOutputStream.writeBoolean(false);
+        for (int pos : vector.getPos()) {
+            dataOutputStream.writeInt(pos);
+        }
+
+        for (int val : vector.getVal()) {
+            dataOutputStream.writeInt(val);
+        }
+
+        dataOutputStream.writeLong(id.getMostSignificantBits());
+        dataOutputStream.writeLong(id.getLeastSignificantBits());
+        dataOutputStream.flush();
     }
 
-    public Protobufs.IndexRecord getAsProtobuf() {
-        return Protobufs.IndexRecord.newBuilder()
-                .setId(id.toString())
-                .setVector(vector.getAsProtobuf())
-                .build();
-    }
 }

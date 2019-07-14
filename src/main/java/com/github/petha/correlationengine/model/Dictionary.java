@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 @Slf4j
@@ -54,6 +55,7 @@ public class Dictionary implements IdfContainer {
     }
 
     private void readDictionaryIdf() {
+        log.info("IDF filename {}", this.filenameService.getDictionaryIDF(this.name));
         try (FileInputStream fileInputStream = new FileInputStream(this.filenameService.getDictionaryIDF(this.name))) {
             Protobufs.DocumentFrequency documentFrequency = Protobufs.DocumentFrequency.parseFrom(fileInputStream);
             this.documents = documentFrequency.getDocuments();
