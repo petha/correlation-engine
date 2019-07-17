@@ -5,7 +5,9 @@ public class CosineSimilarity {
     }
 
     public static float score(int[] posA, int[] valA, int[] posB, int[] valB) {
-        int i = 0, j = 0;
+        int i = 0;
+        int j = 0;
+
         int dotproduct = 0;
         int lengthA = 0;
         int lengthB = 0;

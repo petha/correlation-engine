@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 
 @Slf4j
@@ -110,7 +109,7 @@ public class Dictionary implements IdfContainer {
     @Override
     public synchronized float getIdf(Integer index) {
         return this.preCalculatedIdf
-                .computeIfAbsent(index, idx -> (float) Math.log(this.documents / this.indexDocumentFrequency.get(idx)));
+                .computeIfAbsent(index, idx -> (float) Math.log(this.documents / (float) this.indexDocumentFrequency.get(idx)));
     }
 
     private synchronized void resetIdf() {

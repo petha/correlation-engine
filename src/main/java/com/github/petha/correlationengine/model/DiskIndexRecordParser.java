@@ -8,9 +8,8 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public class DiskIndexRecordParser {
-    private ParseState currentState = ParseState.ReadLength;
+    private ParseState currentState = ParseState.READ_LENGTH;
     private int length = 0;
-    private boolean deleted = false;
     private int[][] values = null;
     private long uuidHigh = 0;
     private int currentValue = 0;
@@ -18,7 +17,7 @@ public class DiskIndexRecordParser {
     public static int[][] readOneFromStream(InputStream stream) throws IOException {
         DataInputStream dataInputStream = new DataInputStream(stream);
         int length = dataInputStream.readInt();
-        boolean b = dataInputStream.readBoolean();
+        dataInputStream.readBoolean();
         int[][] result = new int[2][length];
         for (int i = 0; i < length; i++) {
             result[0][i] = dataInputStream.readInt();
@@ -33,34 +32,33 @@ public class DiskIndexRecordParser {
     public void parse(ByteBuffer buffer, BiConsumer<int[][], UUID> consumer) {
         while (buffer.remaining() >= this.currentState.requiredLength()) {
             switch (currentState) {
-                case ReadLength:
+                case READ_LENGTH:
                     this.length = buffer.getInt();
                     this.values = new int[2][this.length];
                     this.currentState = this.currentState.nextState();
                     break;
-                case ReadDeleted:
-                    this.deleted = buffer.get() != 0;
+                case READ_DELETED:
                     this.currentState = this.currentState.nextState();
                     break;
-                case ReadPos:
+                case READ_POS:
                     this.values[0][currentValue++] = buffer.getInt();
                     if (currentValue == length) {
                         currentValue = 0;
                         this.currentState = this.currentState.nextState();
                     }
                     break;
-                case ReadVal:
+                case READ_VAL:
                     this.values[1][currentValue++] = buffer.getInt();
                     if (currentValue == length) {
                         currentValue = 0;
                         this.currentState = this.currentState.nextState();
                     }
                     break;
-                case ReadHighId:
+                case READ_HIGH_ID:
                     this.uuidHigh = buffer.getLong();
                     this.currentState = this.currentState.nextState();
                     break;
-                case ReadLowId:
+                case READ_LOW_ID:
                     long uuidLow = buffer.getLong();
                     consumer.accept(values, new UUID(uuidHigh, uuidLow));
                     this.currentState = this.currentState.nextState();
@@ -70,10 +68,10 @@ public class DiskIndexRecordParser {
     }
 
     private enum ParseState {
-        ReadLength {
+        READ_LENGTH {
             @Override
             public ParseState nextState() {
-                return ReadDeleted;
+                return READ_DELETED;
             }
 
             @Override
@@ -81,10 +79,10 @@ public class DiskIndexRecordParser {
                 return 4;
             }
         },
-        ReadDeleted {
+        READ_DELETED {
             @Override
             public ParseState nextState() {
-                return ReadPos;
+                return READ_POS;
             }
 
             @Override
@@ -92,10 +90,10 @@ public class DiskIndexRecordParser {
                 return 1;
             }
         },
-        ReadPos {
+        READ_POS {
             @Override
             public ParseState nextState() {
-                return ReadVal;
+                return READ_VAL;
             }
 
             @Override
@@ -103,10 +101,10 @@ public class DiskIndexRecordParser {
                 return 4;
             }
         },
-        ReadVal {
+        READ_VAL {
             @Override
             public ParseState nextState() {
-                return ReadHighId;
+                return READ_HIGH_ID;
             }
 
             @Override
@@ -114,10 +112,10 @@ public class DiskIndexRecordParser {
                 return 4;
             }
         },
-        ReadHighId {
+        READ_HIGH_ID {
             @Override
             public ParseState nextState() {
-                return ReadLowId;
+                return READ_LOW_ID;
             }
 
             @Override
@@ -125,10 +123,10 @@ public class DiskIndexRecordParser {
                 return 8;
             }
         },
-        ReadLowId {
+        READ_LOW_ID {
             @Override
             public ParseState nextState() {
-                return ReadLength;
+                return READ_LENGTH;
             }
 
             @Override
