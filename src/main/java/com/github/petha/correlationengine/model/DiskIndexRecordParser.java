@@ -38,6 +38,7 @@ public class DiskIndexRecordParser {
                     this.currentState = this.currentState.nextState();
                     break;
                 case READ_DELETED:
+                    buffer.get();
                     this.currentState = this.currentState.nextState();
                     break;
                 case READ_POS:
